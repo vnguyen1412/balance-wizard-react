@@ -1,0 +1,87 @@
+[debug] [2024-02-09T00:05:12.867Z] ----------------------------------------------------------------------
+[debug] [2024-02-09T00:05:12.869Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\gmana\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2024-02-09T00:05:12.869Z] CLI Version:   13.2.1
+[debug] [2024-02-09T00:05:12.869Z] Platform:      win32
+[debug] [2024-02-09T00:05:12.869Z] Node Version:  v20.11.0
+[debug] [2024-02-09T00:05:12.870Z] Time:          Thu Feb 08 2024 19:05:12 GMT-0500 (Eastern Standard Time)
+[debug] [2024-02-09T00:05:12.870Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-02-09T00:05:12.936Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-02-09T00:05:12.937Z] > authorizing via signed-in user (gmanarnett@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\gmana\Documents\GitHub\balance-wizard-react
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2024-02-09T00:05:18.276Z] Using project from CLI flag: test-1521b
+[debug] [2024-02-09T00:05:18.278Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/test-1521b [none]
+[debug] [2024-02-09T00:05:18.526Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/test-1521b 200
+[debug] [2024-02-09T00:05:18.526Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/test-1521b {"projectId":"test-1521b","projectNumber":"33478405080","displayName":"test","name":"projects/test-1521b","resources":{"hostingSite":"test-1521b"},"state":"ACTIVE","etag":"1_ad59a6a0-5e99-4128-9e88-9b880ac45311"}
+[info] i  Using project test-1521b (test) 
+[info] 
+=== Hosting:github Setup
+[info] 
+[info] i  Detected a .git folder at C:\Users\gmana\Documents\GitHub\balance-wizard-react 
+[info] i  Authorizing with GitHub to upload your service account to a GitHub repository's secrets store. 
+[info] 
+[info] Visit this URL on this device to log in:
+[info] https://github.com/login/oauth/authorize?client_id=89cf50f02ac6aaed3484&state=321358408&redirect_uri=http%3A%2F%2Flocalhost%3A9005&scope=read%3Auser%20repo%20public_repo
+[info] 
+[info] Waiting for authentication...
+[debug] [2024-02-09T00:05:19.084Z] >>> [apiv2][query] POST https://github.com/login/oauth/access_token [none]
+[debug] [2024-02-09T00:05:19.084Z] >>> [apiv2][body] POST https://github.com/login/oauth/access_token [stream]
+[debug] [2024-02-09T00:05:19.323Z] <<< [apiv2][status] POST https://github.com/login/oauth/access_token 200
+[debug] [2024-02-09T00:05:19.323Z] <<< [apiv2][body] POST https://github.com/login/oauth/access_token {"access_token":"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","token_type":"bearer","scope":"read:user,repo"}
+[debug] [2024-02-09T00:05:19.328Z] >>> [apiv2][query] GET https://api.github.com/user [none]
+[debug] [2024-02-09T00:05:19.560Z] <<< [apiv2][status] GET https://api.github.com/user 200
+[debug] [2024-02-09T00:05:19.560Z] <<< [apiv2][body] GET https://api.github.com/user {"login":"GavinArnett","id":22084837,"node_id":"MDQ6VXNlcjIyMDg0ODM3","avatar_url":"https://avatars.githubusercontent.com/u/22084837?v=4","gravatar_id":"","url":"https://api.github.com/users/GavinArnett","html_url":"https://github.com/GavinArnett","followers_url":"https://api.github.com/users/GavinArnett/followers","following_url":"https://api.github.com/users/GavinArnett/following{/other_user}","gists_url":"https://api.github.com/users/GavinArnett/gists{/gist_id}","starred_url":"https://api.github.com/users/GavinArnett/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/GavinArnett/subscriptions","organizations_url":"https://api.github.com/users/GavinArnett/orgs","repos_url":"https://api.github.com/users/GavinArnett/repos","events_url":"https://api.github.com/users/GavinArnett/events{/privacy}","received_events_url":"https://api.github.com/users/GavinArnett/received_events","type":"User","site_admin":false,"name":"Gavin","company":null,"blog":"","location":null,"email":null,"hireable":null,"bio":null,"twitter_username":null,"public_repos":1,"public_gists":0,"followers":0,"following":0,"created_at":"2016-09-08T20:04:51Z","updated_at":"2024-01-16T16:47:47Z","private_gists":0,"total_private_repos":1,"owned_private_repos":1,"disk_usage":76,"collaborators":4,"two_factor_authentication":true,"plan":{"name":"free","space":976562499,"collaborators":0,"private_repos":10000}}
+[info] 
+[info] +  Success! Logged into GitHub as GavinArnett 
+[info] 
+[debug] [2024-02-09T00:05:51.405Z] >>> [apiv2][query] GET https://api.github.com/repos/vtnguyen/balance-wizard-react/actions/secrets/public-key type=owner
+[debug] [2024-02-09T00:05:51.549Z] <<< [apiv2][status] GET https://api.github.com/repos/vtnguyen/balance-wizard-react/actions/secrets/public-key 404
+[debug] [2024-02-09T00:05:51.549Z] <<< [apiv2][body] GET https://api.github.com/repos/vtnguyen/balance-wizard-react/actions/secrets/public-key {"message":"Not Found","documentation_url":"https://docs.github.com/rest/actions/secrets#get-a-repository-public-key"}
+[info] 
+[info] 
+[error] !  The provided authorization cannot be used with this repository. If this repository is in an organization, did you remember to grant access? 
+[info] 
+[info] i  Action required: Visit this URL to ensure access has been granted to the appropriate organization(s) for the Firebase CLI GitHub OAuth App: 
+[info] https://github.com/settings/connections/applications/89cf50f02ac6aaed3484
+[info] 
+[debug] [2024-02-09T00:06:00.949Z] >>> [apiv2][query] GET https://api.github.com/repos/vtnguyen/balance-wizard-react/actions/secrets/public-key type=owner
+[debug] [2024-02-09T00:06:01.118Z] <<< [apiv2][status] GET https://api.github.com/repos/vtnguyen/balance-wizard-react/actions/secrets/public-key 404
+[debug] [2024-02-09T00:06:01.118Z] <<< [apiv2][body] GET https://api.github.com/repos/vtnguyen/balance-wizard-react/actions/secrets/public-key {"message":"Not Found","documentation_url":"https://docs.github.com/rest/actions/secrets#get-a-repository-public-key"}
+[info] 
+[info] 
+[error] !  The provided authorization cannot be used with this repository. If this repository is in an organization, did you remember to grant access? 
+[info] 
+[info] i  Action required: Visit this URL to ensure access has been granted to the appropriate organization(s) for the Firebase CLI GitHub OAuth App: 
+[info] https://github.com/settings/connections/applications/89cf50f02ac6aaed3484
+[info] 
+[debug] [2024-02-09T00:06:08.895Z] >>> [apiv2][query] GET https://api.github.com/repos/vtnguyen/balance-wizard-react/actions/secrets/public-key type=owner
+[debug] [2024-02-09T00:06:09.029Z] <<< [apiv2][status] GET https://api.github.com/repos/vtnguyen/balance-wizard-react/actions/secrets/public-key 404
+[debug] [2024-02-09T00:06:09.029Z] <<< [apiv2][body] GET https://api.github.com/repos/vtnguyen/balance-wizard-react/actions/secrets/public-key {"message":"Not Found","documentation_url":"https://docs.github.com/rest/actions/secrets#get-a-repository-public-key"}
+[info] 
+[info] 
+[error] !  The provided authorization cannot be used with this repository. If this repository is in an organization, did you remember to grant access? 
+[info] 
+[info] i  Action required: Visit this URL to ensure access has been granted to the appropriate organization(s) for the Firebase CLI GitHub OAuth App: 
+[info] https://github.com/settings/connections/applications/89cf50f02ac6aaed3484
+[info] 
