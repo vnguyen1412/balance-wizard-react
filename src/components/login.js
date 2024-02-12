@@ -38,7 +38,9 @@ export const Auth = () => {
                     onChange={(e) => setPassword(e.target.value)}
                 />
             </div>
-            <button> Sign In </button>
+            <button> New User </button>
+            <button> Forgot Password </button>
+            <button> Log In </button>
         </div>
     );
 };
