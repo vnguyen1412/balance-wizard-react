@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CreateAccount = () => {
+export const CreateAccount = () => {
 return (
     <div>
     <div>
