@@ -1,6 +1,6 @@
 import React from 'react';
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
-import './createAccount.css';
+import './Styling.css';
 
 export const CreateAccount = () => {
     return (
