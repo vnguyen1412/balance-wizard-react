@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg"; // Import the logo
 import { auth } from "../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, collection, setDoc, doc } from "firebase/firestore";
 // import { sendEmailToAdmin } from "../functions/emailFunctions";
 import './Styling.css';
 
@@ -29,12 +29,13 @@ export const CreateAccount = () => {
     
             // Create user in Firebase Authentication
             const userCredential = await createUserWithEmailAndPassword(auth, userData.email, 'tempPassword');
+            const uid = userCredential.user.uid; // Get the UID
             const db = getFirestore();
             // Generate username
             const username = generateUsername(userData);
             // Add user data to Firestore
-            const userRef = collection(db, "users");
-            await addDoc(userRef, {
+            const userRef = doc(db, "users", uid);
+            await setDoc(userRef, {
                 firstName: userData.firstName,
                 lastName: userData.lastName,
                 email: userData.email,
