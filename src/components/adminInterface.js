@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getFirestore, collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
-import { signInWithEmailAndPassword, getAuth, sendPasswordResetEmail } from '@firebase/auth';
+import { getFirestore, collection, getDocs, doc, updateDoc, getDoc, addDoc } from 'firebase/firestore';
+import { signInWithEmailAndPassword, getAuth, sendPasswordResetEmail, createUserWithEmailAndPassword } from '@firebase/auth';
 import { isAdmin } from './auth';
 import { auth } from "../config/firebase";
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
@@ -13,6 +13,15 @@ const AdminInterface = () => {
     const [editingUser, setEditingUser] = useState(null);
     const [resetSent, setResetSent] = useState(false);
     const [editFormData, setEditFormData] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        dob: "",
+        address: "",
+        role: ""
+    });
+    const [creatingUser, setCreatingUser] = useState(false); // State to control the visibility of the create user popup
+    const [newUserData, setNewUserData] = useState({
         firstName: "",
         lastName: "",
         email: "",
@@ -137,13 +146,58 @@ const AdminInterface = () => {
         }
     };
 
-    const handleSubmit = async (event) => {
+    const handleSubmitEdit = async (event) => {
         event.preventDefault(); // Prevent default form submission behavior
         
         // Call your editUser function or any other form handling logic here
         editUser();
     };
+    const handleSubmitCreate = async (event) => {
+        event.preventDefault(); // Prevent default form submission behavior
+        
+        // Call your editUser function or any other form handling logic here
+        createUser();
+    };
     
+    const createUser = async () => {
+        try {
+            const auth = getAuth();
+            const password = "tempPassword"; //probably make this random at some point
+            const email = newUserData.email;
+
+            if(newUserData.role != "Accountant" && newUserData.role != "Manager" && newUserData.role != "Administrator") {
+                newUserData.role = "Accountant";
+            }
+            
+            // First, create a Firebase Authentication account
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+    
+            // Then, add the user data to Firestore
+            const db = getFirestore();
+            const newUserRef = await addDoc(collection(db, 'users'), {
+                ...newUserData,
+                uid: user.uid, // Add the UID from Firebase Authentication
+                status: "Approved" // Set initial status to Approved
+            });
+
+            //Send the user an email to set their pasword
+            await sendPasswordResetEmail(auth, email);
+
+            console.log("Document written with ID: ", newUserRef.id);
+            fetchUsers();
+            setCreatingUser(false); // Close the popup after user is created
+        } catch (error) {
+            console.error('Error creating user:', error);
+        }
+    };
+    const handleNewUserChange = (e) => {
+        const { name, value } = e.target;
+        setNewUserData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
 
     return (
         <div>
@@ -156,6 +210,7 @@ const AdminInterface = () => {
             <div className="blue-box">
                 <div className="user-box">
                     <h3>Current Users</h3>
+                    <button onClick={() => setCreatingUser(true)}>Create New User</button> {/* Button to open the create user popup */}
                     <table>
                         <thead>
                             <tr>
@@ -214,7 +269,7 @@ const AdminInterface = () => {
                 <div className="popup">
                     <div className="popup-content">
                         <h3>Edit User</h3>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmitEdit}>
                             <div className="form-group">
                                 <label htmlFor="firstName">First Name:</label>
                                 <input type="text" name="firstName" value={editFormData.firstName} onChange={handleEditChange} required />
@@ -245,6 +300,45 @@ const AdminInterface = () => {
                             </div>
                             <button type="submit">Save Changes</button>
                             <button onClick={() => setEditingUser(null)}>Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            )}
+            {creatingUser && (
+                <div className="popup">
+                    <div className="popup-content">
+                        <h3>Create New User</h3>
+                        <form onSubmit={handleSubmitCreate}>
+                            <div className="form-group">
+                                <label htmlFor="firstName">First Name:</label>
+                                <input type="text" name="firstName" value={newUserData.firstName} onChange={handleNewUserChange} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="lastName">Last Name:</label>
+                                <input type="text" name="lastName" value={newUserData.lastName} onChange={handleNewUserChange} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="email">Email:</label>
+                                <input type="email" name="email" value={newUserData.email} onChange={handleNewUserChange} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="dob">Date of Birth:</label>
+                                <input type="date" name="dob" value={newUserData.dob} onChange={handleNewUserChange} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="address">Address:</label>
+                                <input type="text" name="address" value={newUserData.address} onChange={handleNewUserChange} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="role">Role:</label>
+                                <select name="role" value={newUserData.role} onChange={handleNewUserChange} required>
+                                    <option value="Accountant">Accountant</option>
+                                    <option value="Manager">Manager</option>
+                                    <option value="Administrator">Administrator</option>
+                                </select>
+                            </div>
+                            <button type="submit">Create User</button>
+                            <button onClick={() => setCreatingUser(false)}>Cancel</button>
                         </form>
                     </div>
                 </div>
