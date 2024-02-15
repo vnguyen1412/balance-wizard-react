@@ -1,5 +1,3 @@
-/* createAccount.css */
-
 /* Top section */
 .container {
     background-color: white;
@@ -27,7 +25,7 @@
     margin-left: auto;
 }
 
-  /* Menu Bar */
+/* Menu Bar */
 .menu-bar {
     background-color: #AFABAB;
     text-align: center;
@@ -36,7 +34,7 @@
     border: 1px solid black;
 }
 
-  /* Blue Box */
+/* Blue Box */
 .blue-box {
     background-color: #8FAADC;
     min-height: calc(100vh - 40px);
@@ -44,7 +42,7 @@
     border: 1px solid black;
 }
 
-  /* Create New User Box */
+/* Create New User Box */
 .user-box {
     background-color: #D9D9D9;
     padding: 20px;
@@ -84,4 +82,55 @@
 
 .submit-button {
     text-align: center;
+}
+
+/* Forgot Password Popup */
+.forgot-password-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 5px;
+    z-index: 1000; /* Ensure the popup appears above other content */
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: red; /* Change color on hover */
+}
+
+/* Popup */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Ensure the popup is above other elements */
+}
+
+.popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    max-width: 80%;
+}
+
+.popup-content h3 {
+    margin-top: 0;
 }

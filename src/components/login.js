@@ -1,5 +1,5 @@
 import { auth } from "../config/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
 import { Link } from 'react-router-dom';
@@ -8,6 +8,10 @@ import "./Styling.css"; // Importing the CSS file
 export const Auth = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
+    const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+    const [resetEmailSent, setResetEmailSent] = useState(false);
+    const [error, setError] = useState(null);
 
     const signIn = async () => {
         try {
@@ -18,6 +22,15 @@ export const Auth = () => {
             // Handle login errors here, such as displaying error messages to the user
         }
     }
+
+    const handleForgotPassword = async () => {
+        try {
+            await sendPasswordResetEmail(auth, forgotPasswordEmail);
+            setResetEmailSent(true);
+        } catch (error) {
+            setError(error.message);
+        }
+    };
 
     return (
         <div>
@@ -49,10 +62,35 @@ export const Auth = () => {
                         </div>
                         <div className="submit-button">
                             <button type="submit" onClick={signIn}>Submit</button>
+                            <button type="button" onClick={() => setShowForgotPasswordPopup(true)}>Forgot Password</button>
                         </div>
                     </form>
                 </div>
             </div>
+
+            {showForgotPasswordPopup && (
+                <div className="forgot-password-popup">
+                    <div className="forgot-password-content">
+                        <span className="close" onClick={() => setShowForgotPasswordPopup(false)}>&times;</span>
+                        <h2>Forgot Password</h2>
+                        {resetEmailSent ? (
+                            <p>Password reset email sent. Check your inbox.</p>
+                        ) : (
+                            <div>
+                                <input
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    value={forgotPasswordEmail}
+                                    onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                                    required
+                                />
+                                <button onClick={handleForgotPassword}>Reset Password</button>
+                                {error && <p>{error}</p>}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
