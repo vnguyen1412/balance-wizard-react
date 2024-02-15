@@ -137,6 +137,14 @@ const AdminInterface = () => {
         }
     };
 
+    const handleSubmit = async (event) => {
+        event.preventDefault(); // Prevent default form submission behavior
+        
+        // Call your editUser function or any other form handling logic here
+        editUser();
+    };
+    
+
     return (
         <div>
             <div className="container">
@@ -203,10 +211,10 @@ const AdminInterface = () => {
                 </div>
             </div>
             {editingUser && (
-                <div className="edit-form-overlay">
-                    <div className="edit-form">
+                <div className="popup">
+                    <div className="popup-content">
                         <h3>Edit User</h3>
-                        <form onSubmit={editUser}>
+                        <form onSubmit={handleSubmit}>
                             <div className="form-group">
                                 <label htmlFor="firstName">First Name:</label>
                                 <input type="text" name="firstName" value={editFormData.firstName} onChange={handleEditChange} required />
@@ -229,7 +237,11 @@ const AdminInterface = () => {
                             </div>
                             <div className="form-group">
                                 <label htmlFor="role">Role:</label>
-                                <input type="text" name="role" value={editFormData.role} onChange={handleEditChange} required />
+                                <select name="role" value={editFormData.role} onChange={handleEditChange} required>
+                                    <option value="Accountant">Accountant</option>
+                                    <option value="Manager">Manager</option>
+                                    <option value="Administrator">Administrator</option>
+                                </select>
                             </div>
                             <button type="submit">Save Changes</button>
                             <button onClick={() => setEditingUser(null)}>Cancel</button>
@@ -239,8 +251,6 @@ const AdminInterface = () => {
             )}
         </div>
     );
-    
-    
 };
 
 export default AdminInterface;
