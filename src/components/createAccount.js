@@ -1,8 +1,17 @@
 import React from 'react';
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
 import './Styling.css';
+import { useNavigate } from 'react-router-dom';
 
 export const CreateAccount = () => {
+    const navigate = useNavigate();
+
+        //navigates to the Login screen
+        const handleButtonClick = () => {
+            navigate('/');
+        }
+
+    
     return (
         <div>
             <div className="container">
@@ -10,7 +19,7 @@ export const CreateAccount = () => {
                 <h1 className="title">Balance Wizard</h1>
                 <div className="buttons">
                     <button>New User</button> |
-                    <button>Login</button>
+                    <button onClick={handleButtonClick}>Login</button>
                 </div>
             </div>
 
