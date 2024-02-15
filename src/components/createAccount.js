@@ -6,8 +6,10 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, setDoc, doc } from "firebase/firestore";
 // import { sendEmailToAdmin } from "../functions/emailFunctions";
 import './Styling.css';
+import { useNavigate } from 'react-router-dom';
 
 export const CreateAccount = () => {
+
     const [userData, setUserData] = useState({
         firstName: "",
         lastName: "",

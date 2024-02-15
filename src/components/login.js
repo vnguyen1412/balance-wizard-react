@@ -5,7 +5,7 @@ import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
 import { Link } from 'react-router-dom';
 import "./Styling.css"; // Importing the CSS file
 
-export const Auth = () => {
+export const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
