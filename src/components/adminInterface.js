@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getFirestore, collection, getDocs, doc, updateDoc } from 'firebase/firestore';
-import { signInWithEmailAndPassword, getAuth } from '@firebase/auth';
+import { getFirestore, collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
+import { signInWithEmailAndPassword, getAuth, sendPasswordResetEmail } from '@firebase/auth';
 import { isAdmin } from './auth';
+import { auth } from "../config/firebase";
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
 import './Styling.css';
 
@@ -10,6 +11,7 @@ const AdminInterface = () => {
     const [currentUsers, setCurrentUsers] = useState([]);
     const [pendingUsers, setPendingUsers] = useState([]);
     const [editingUser, setEditingUser] = useState(null);
+    const [resetSent, setResetSent] = useState(false);
     const [editFormData, setEditFormData] = useState({
         firstName: "",
         lastName: "",
@@ -45,6 +47,15 @@ const AdminInterface = () => {
             const db = getFirestore();
             const userRef = doc(db, 'users', userId);
             await updateDoc(userRef, { status: 'Approved' });
+            const userDocSnap = await getDoc(userRef);
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+                await sendPasswordResetEmail(auth, userData.email);
+            } else {
+                console.log("User document not found");
+                return null;
+            }
+            setResetSent(true);
             fetchUsers();
         } catch (error) {
             console.error('Error approving user:', error);
