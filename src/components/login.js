@@ -1,70 +1,96 @@
-import {auth} from "../config/firebase";
-import { createUserWithEmailAndPassword} from "firebase/auth";
-import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
+import { auth } from "../config/firebase";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-// the "placeholer" attribute is provide a short hint in the textbox about the expected value for the input field (it is the gray word you see in a text box to know what to type in)
+import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
+import { Link } from 'react-router-dom';
+import "./Styling.css"; // Importing the CSS file
 
 export const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
+    const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+    const [resetEmailSent, setResetEmailSent] = useState(false);
+    const [error, setError] = useState(null);
 
-    const navigate = useNavigate();
-
-    const handleButtonClick = () => {
-        navigate('/create-account');
-    }
-
-    //"async" make this an asynchronous function
     const signIn = async () => {
-        await createUserWithEmailAndPassword(auth, email, password);
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            // If login is successful, you can redirect the user to another page or perform any other necessary actions
+        } catch (error) {
+            console.error(error);
+            // Handle login errors here, such as displaying error messages to the user
+        }
     }
+
+    const handleForgotPassword = async () => {
+        try {
+            await sendPasswordResetEmail(auth, forgotPasswordEmail);
+            setResetEmailSent(true);
+        } catch (error) {
+            setError(error.message);
+        }
+    };
 
     return (
         <div>
-            {/* Make up the top with the logo */}
             <div className="container">
                 <img src={BalanceWizardLogo} alt="logo" className="logo" />
                 <h1 className="title">Balance Wizard</h1>
+                <div className="buttons">
+                    <Link to="/login"><button>Login</button></Link>
+                    <span> | </span>
+                    <Link to="/create-account"><button>New User</button></Link>
+                </div>
             </div>
 
-            {/* Navbar */}
-            <div style={{ backgroundColor: '#AFABAB', textAlign: 'center', color: 'black', padding: '10px', border: '1px solid black' }}>
+            <div className="menu-bar">
                 Menu Bar for Future Functions
             </div>
 
             <div className="blue-box">
                 <div className="user-box">
-                    <h2 className="user-box-tiel"> Login </h2>
+                    <h2 className="user-box-title">Log In</h2>
                     <form className="form-container">
                         <div className="label-container">
-                            <label htmlFor="email" className="label"> Email: </label>
-                            <input
-                                placeholder="Email..."
-                                /*onChange={(e) => setEmail(e.target.value)}*/
-                                id="email"
-                                className="input-field"
-                            />
+                            <label htmlFor="email" className="label">Email:</label>
+                            <input type="text" id="email" className="input-field" placeholder="Email..." onChange={(e) => setEmail(e.target.value)} />
                         </div>
                         <div className="label-container">
-                            <label htmlFor="password" className="label"> Email: </label>
-                            <input
-                                placeholder="Password..."
-                                /*onChange={(e) => setPassword(e.target.value)}*/
-                                id="password"
-                                className="input-field"
-                                type="password"
-                            />
+                            <label htmlFor="password" className="label">Password:</label>
+                            <input type="password" id="password" className="input-field" placeholder="Password..." onChange={(e) => setPassword(e.target.value)} />
                         </div>
                         <div className="submit-button">
-                            <button className="button-spacing" onClick={handleButtonClick}> New User </button>
-                            <button className="button-spacing"> Forgot Password </button>
-                            <button className="button-spacing"> Log In </button> 
+                            <button type="submit" onClick={signIn}>Submit</button>
+                            <button type="button" onClick={() => setShowForgotPasswordPopup(true)}>Forgot Password</button>
                         </div>
                     </form>
                 </div>
             </div>
+
+            {showForgotPasswordPopup && (
+                <div className="forgot-password-popup">
+                    <div className="forgot-password-content">
+                        <span className="close" onClick={() => setShowForgotPasswordPopup(false)}>&times;</span>
+                        <h2>Forgot Password</h2>
+                        {resetEmailSent ? (
+                            <p>Password reset email sent. Check your inbox.</p>
+                        ) : (
+                            <div>
+                                <input
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    value={forgotPasswordEmail}
+                                    onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                                    required
+                                />
+                                <button onClick={handleForgotPassword}>Reset Password</button>
+                                {error && <p>{error}</p>}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
