@@ -1,16 +1,27 @@
 import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Auth } from "./components/login";
-import {CreateAccount } from "./components/createAccount";
+import { CreateAccount } from "./components/createAccount";
+import { HomePage } from './components/HomePage';
+import AdminInterface from './components/adminInterface';
 
-function App() {
+function App () {
   return (
-    <div className="App">
-      <CreateAccount/>
-    </div>
-  );
-}
+      <Router>
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<Auth />} />
+                <Route path="/create-account" element={<CreateAccount />} />  
+                <Route path="/admin-interface" element={<AdminInterface />} />
 
+                {/* Add more routes for other pages as needed */}
+            </Routes>
+      </Router>
+  );
+};
+
+export default App;
 // function App() {
 //   return (
 //     <div className="App">
@@ -31,5 +42,3 @@ function App() {
 //     </div>
 //   );
 // }
-
-export default App;

@@ -1,46 +1,58 @@
-import {auth} from "../config/firebase";
-import { createUserWithEmailAndPassword} from "firebase/auth";
+import { auth } from "../config/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-
-// the "placeholer" attribute is provide a short hint in the textbox about the expected value for the input field (it is the gray word you see in a text box to know what to type in)
+import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
+import { Link } from 'react-router-dom';
+import "./Styling.css"; // Importing the CSS file
 
 export const Auth = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    //"async" make this an asynchronous function
     const signIn = async () => {
-        await createUserWithEmailAndPassword(auth, email, password);
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            // If login is successful, you can redirect the user to another page or perform any other necessary actions
+        } catch (error) {
+            console.error(error);
+            // Handle login errors here, such as displaying error messages to the user
+        }
     }
 
-    //onChange={(e) => setEmail(e.target.value)}
-    //onChange is an event handler that fires whenever the value of the input field chaanges
-    //e.target.value refers to the elements that triggered the event which is the "input field" in this case and it also gets the current value in the input field
-    //setEmail will then update the state variable that we created above
     return (
         <div>
-            <h>
-                Email
-            </h>
-            <div>
-                <input
-                    placeholder="Email..."
-                    onChange={(e) => setEmail(e.target.value)}
-                />
+            <div className="container">
+                <img src={BalanceWizardLogo} alt="logo" className="logo" />
+                <h1 className="title">Balance Wizard</h1>
+                <div className="buttons">
+                    <Link to="/login"><button>Login</button></Link>
+                    <span> | </span>
+                    <Link to="/create-account"><button>New User</button></Link>
+                </div>
             </div>
-            <h>
-                Password
-            </h>
-            <div>
-                <input
-                    placeholder="Password..."
-                    type="password"
-                    onChange={(e) => setPassword(e.target.value)}
-                />
+
+            <div className="menu-bar">
+                Menu Bar for Future Functions
             </div>
-            <button> New User </button>
-            <button> Forgot Password </button>
-            <button> Log In </button>
+
+            <div className="blue-box">
+                <div className="user-box">
+                    <h2 className="user-box-title">Log In</h2>
+                    <form className="form-container">
+                        <div className="label-container">
+                            <label htmlFor="email" className="label">Email:</label>
+                            <input type="text" id="email" className="input-field" placeholder="Email..." onChange={(e) => setEmail(e.target.value)} />
+                        </div>
+                        <div className="label-container">
+                            <label htmlFor="password" className="label">Password:</label>
+                            <input type="password" id="password" className="input-field" placeholder="Password..." onChange={(e) => setPassword(e.target.value)} />
+                        </div>
+                        <div className="submit-button">
+                            <button type="submit" onClick={signIn}>Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     );
 };
