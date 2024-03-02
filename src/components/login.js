@@ -3,6 +3,7 @@ import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/aut
 import { useState } from "react";
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
 import { Link } from 'react-router-dom';
+import { getFirestore, doc, getDoc } from 'firebase/firestore'; // Import Firestore functions
 import "./Styling.css"; // Importing the CSS file
 
 export const Auth = () => {
@@ -13,15 +14,35 @@ export const Auth = () => {
     const [resetEmailSent, setResetEmailSent] = useState(false);
     const [error, setError] = useState(null);
 
-    const signIn = async () => {
+    const signIn = async (e) => {
+        e.preventDefault(); // Prevent page refresh on form submission
         try {
+            // Fetch user data from Firestore
+            const db = getFirestore();
+            const userDoc = doc(db, 'users', email); // Assuming email is the user's document ID
+            const userSnap = await getDoc(userDoc);
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                const { suspensionStartDate, suspensionExpiryDate } = userData;
+                const currentDate = new Date();
+    
+                // Check if the current date is within the suspension period
+                if (currentDate >= suspensionStartDate.toDate() && currentDate <= suspensionExpiryDate.toDate()) {
+                    setError("Access denied. Your account is suspended until further notice.");
+                    return;
+                }
+            }
+    
+            // Proceed with signing in the user if not suspended
             await signInWithEmailAndPassword(auth, email, password);
             // If login is successful, you can redirect the user to another page or perform any other necessary actions
         } catch (error) {
+            setError("Invalid email or password. Please try again."); // Set error message for incorrect password
             console.error(error);
             // Handle login errors here, such as displaying error messages to the user
         }
     }
+    
 
     const handleForgotPassword = async () => {
         try {
@@ -64,6 +85,7 @@ export const Auth = () => {
                             <button type="submit" onClick={signIn}>Submit</button>
                             <button type="button" onClick={() => setShowForgotPasswordPopup(true)}>Forgot Password</button>
                         </div>
+                        {error && <p className="error-message">{error}</p>} {/* Display error message */}
                     </form>
                 </div>
             </div>
@@ -85,7 +107,7 @@ export const Auth = () => {
                                     required
                                 />
                                 <button onClick={handleForgotPassword}>Reset Password</button>
-                                {error && <p>{error}</p>}
+                                {error && <p className="error-message">{error}</p>} {/* Display error message */}
                             </div>
                         )}
                     </div>

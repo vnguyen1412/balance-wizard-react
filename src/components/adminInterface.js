@@ -298,6 +298,14 @@ const AdminInterface = () => {
                                     <option value="Administrator">Administrator</option>
                                 </select>
                             </div>
+                            <div className="form-group">
+                                <label htmlFor="suspensionStartDate">Suspension Start Date:</label>
+                                <input type="date" name="suspensionStartDate" value={editFormData.suspensionStartDate} onChange={handleEditChange} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="suspensionExpiryDate">Suspension Expiry Date:</label>
+                                <input type="date" name="suspensionExpiryDate" value={editFormData.suspensionExpiryDate} onChange={handleEditChange} />
+                            </div>
                             <button type="submit">Save Changes</button>
                             <button onClick={() => setEditingUser(null)}>Cancel</button>
                         </form>

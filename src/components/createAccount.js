@@ -43,7 +43,9 @@ export const CreateAccount = () => {
                 address: userData.address,
                 role: "Accountant",
                 status: "Pending",
-                username: username
+                username: username,
+                suspensionStartDate: "",
+                suspensionExpiryDate: ""
             });
             // Send user data to Cloud Function for approval
             await fetch('/requestAccountCreation', {
