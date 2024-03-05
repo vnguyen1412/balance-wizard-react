@@ -15,9 +15,11 @@ export const CreateAccount = () => {
         lastName: "",
         email: "",
         dob: "",
-        address: ""
+        address: "",
+        securityAnswer: ""
     });
     const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
     const [success, setSuccess] = useState(false); // Add success state
 
     const handleFormSubmit = async (e) => {
@@ -28,9 +30,15 @@ export const CreateAccount = () => {
                 setEmailError("Please enter a valid email address");
                 return;
             }
+
+            // Vlidate password
+            if (!isValidPassword(userData.password)) {
+                setPasswordError("Please enter a valid password");
+                return;
+            }
     
             // Create user in Firebase Authentication
-            const userCredential = await createUserWithEmailAndPassword(auth, userData.email, 'tempPassword');
+            const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
             const uid = userCredential.user.uid; // Get the UID
             const db = getFirestore();
             // Generate username
@@ -43,6 +51,7 @@ export const CreateAccount = () => {
                 email: userData.email,
                 dob: userData.dob,
                 address: userData.address,
+                securityAnswer: userData.securityAnswer,
                 role: "Accountant",
                 status: "Pending",
                 username: username
@@ -69,7 +78,8 @@ export const CreateAccount = () => {
                 lastName: "",
                 email: "",
                 dob: "",
-                address: ""
+                address: "",
+                securityAnswer: ""
             });
         } catch (error) {
             console.error("Error creating user:", error);
@@ -91,6 +101,13 @@ export const CreateAccount = () => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
     };
+
+    //checks if the password: starts with a letter, has a number, has a special character, and contains at least 8 character  
+    const isValidPassword = (password) => {
+        //const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\S]{8,}$/; Not sure if this is right
+        const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+        return regex.test(password);
+    }
 
     const generateUsername = (userData) => {
         const month = new Date().getMonth() + 1;
@@ -123,6 +140,11 @@ export const CreateAccount = () => {
                             {emailError && <p className="error-message">{emailError}</p>}
                         </div>
                         <div className="label-container">
+                            <label htmlFor="password" className="label">Password:</label>
+                            <input type="password" name="password" value={userData.password} onChange={handleChange} className="input-field" placeholder="Password" required />
+                            {passwordError && <p className="error-message">{passwordError}</p>}
+                        </div>
+                        <div className="label-container">
                             <label htmlFor="dob" className="label">Date of Birth:</label>
                             <input type="date" name="dob" value={userData.dob} onChange={handleChange} className="input-field" required />
                         </div>
@@ -130,6 +152,19 @@ export const CreateAccount = () => {
                             <label htmlFor="address" className="label">Address:</label>
                             <input type="text" name="address" value={userData.address} onChange={handleChange} className="input-field" placeholder="Address" required />
                         </div>
+                        <div className="label-container">
+                            <h>Security Question: What is the name of the city you were born in?</h>
+                        </div>
+                        <div className="label-container">
+                            <label htmlFor="securityAnswer" className="label">Security Answer:</label>
+                            <input type="text" name="securityAnswer" value={userData.securityAnswer} onChange={handleChange} className="input-field" placeholder="Security Answer" required />
+                        </div>
+                        {/*<div className="label-container">
+                            <label htmlFor="password" className="label">Password:</label>
+                            <input type="password" name="password" value={userData.password} onChange={handleChange} className="input-field" placeholder="Password" required />
+                            {passwordError && <p className="error-message">{passwordError}</p>}
+                        </div>
+                        */}
                         <div className="submit-button">
                             <button type="submit" className="button">Submit</button>
                         </div>

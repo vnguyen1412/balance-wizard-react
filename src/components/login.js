@@ -1,5 +1,6 @@
 import { auth } from "../config/firebase";
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { getFirestore, collection, getDocs, doc, query, where } from "firebase/firestore";
 import { useState } from "react";
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
 import { Link } from 'react-router-dom';
@@ -8,10 +9,17 @@ import "./Styling.css"; // Importing the CSS file
 export const Auth = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
     const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
-    const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
     const [resetEmailSent, setResetEmailSent] = useState(false);
+    const [userExist, setUserExist] = useState(true);
+    const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+    const [userId, setUserId] = useState("");
+    const [securityAnswer, setSecurityAnswer] = useState("");
+    const [newPassword, setNewPassword] = useState("");
     const [error, setError] = useState(null);
+
+    const db = getFirestore();
 
     const signIn = async () => {
         try {
@@ -25,12 +33,52 @@ export const Auth = () => {
 
     const handleForgotPassword = async () => {
         try {
-            await sendPasswordResetEmail(auth, forgotPasswordEmail);
-            setResetEmailSent(true);
+            //await sendPasswordResetEmail(auth, forgotPasswordEmail);
+            //setResetEmailSent(true);
+
+            //check if the email exist
+            const methods = await auth.fetchSignInMethodsForEmail(forgotPasswordEmail);
+            if(!methods && methods.length <= 0) {
+                throw new Error("Email does not exist")
+            }
+
+            let uid = null
+            const userRef = collection(db, "users");
+            const q = query(userRef, where("email", "==", forgotPasswordEmail));
+
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                //test to make sure the correct document is retreived
+                console.log(doc.id, " => ", doc.data());
+
+                //just in case I need the uid
+                uid = doc.id;
+                console.log("the UID is: " + uid)
+
+                //confirms if the user id and security answer matches the document that also has the email
+                if((doc.data().username != userId) || (doc.data().securityAnswer != securityAnswer)) {
+                    throw new Error("Invalid Inputs")
+                }
+            });  
+            
+            if(!isValidPassword(newPassword)) {
+                throw new Error("invalid password")
+            }
         } catch (error) {
             setError(error.message);
         }
     };
+
+    const isValidPassword = (password) => {
+        //const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\S]{8,}$/; Not sure if this is right
+        const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+        return regex.test(password);
+    }
+
+    //checks to see if the account exist and if the user's input matches the security questions
+    const accountExist = ({ email}) => {
+
+    }
 
     return (
         <div>
@@ -68,7 +116,8 @@ export const Auth = () => {
                 </div>
             </div>
 
-            {showForgotPasswordPopup && (
+            {/* Forgot Password Popup */}
+            {/*{showForgotPasswordPopup && (
                 <div className="forgot-password-popup">
                     <div className="forgot-password-content">
                         <span className="close" onClick={() => setShowForgotPasswordPopup(false)}>&times;</span>
@@ -84,6 +133,63 @@ export const Auth = () => {
                                     onChange={(e) => setForgotPasswordEmail(e.target.value)}
                                     required
                                 />
+                                <button onClick={handleForgotPassword}>Reset Password</button>
+                                {error && <p>{error}</p>}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}*/}
+
+            {/* testing  */}
+            {showForgotPasswordPopup && (
+                <div className="forgot-password-popup">
+                    <div className="forgot-password-content">
+                        <span className="close" onClick={() => setShowForgotPasswordPopup(false)}>&times;</span>
+                        <h2>Forgot Password</h2>
+                        {resetEmailSent ? (
+                            <p>Password reset email sent. Check your inbox.</p>
+                        ) : (
+                            <div>
+                                <div>
+                                    <input
+                                        type="email"
+                                        placeholder="Enter your email"
+                                        value={forgotPasswordEmail}
+                                        onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <input
+                                        type="text"
+                                        placeholder="User ID"
+                                        value={userId}
+                                        onChange={(e) => setUserId(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <h>What is the name of the city you were born in?</h>
+                                </div>
+                                <div>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter Security Question Answer"
+                                        value={securityAnswer}
+                                        onChange={(e) => setSecurityAnswer(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <input
+                                        type="password"
+                                        placeholder="Password..."
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        required
+                                    />
+                                </div>
                                 <button onClick={handleForgotPassword}>Reset Password</button>
                                 {error && <p>{error}</p>}
                             </div>
