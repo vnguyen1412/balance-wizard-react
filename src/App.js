@@ -5,6 +5,7 @@ import { Auth } from "./components/login";
 import { CreateAccount } from "./components/createAccount";
 import { HomePage } from './components/HomePage';
 import AdminInterface from './components/adminInterface';
+import ChartOfAccountsPage from './components/ChartOfAccountsPage';
 
 function App () {
   return (
@@ -14,6 +15,7 @@ function App () {
                 <Route path="/login" element={<Auth />} />
                 <Route path="/create-account" element={<CreateAccount />} />  
                 <Route path="/admin-interface" element={<AdminInterface />} />
+                <Route path="/chart" element={<ChartOfAccountsPage />} />
 
                 {/* Add more routes for other pages as needed */}
             </Routes>

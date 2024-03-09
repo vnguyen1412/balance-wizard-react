@@ -20,6 +20,7 @@ export const HomePage = () => {
             <div className="menu-bar">
                 Menu Bar for Future Functions
                 <Link to="/admin-interface"><button>Admin Interface</button></Link>
+                <Link to="/chart"><button>Charts</button></Link>
             </div>
 
             <div className="blue-box">
