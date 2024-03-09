@@ -1,5 +1,5 @@
 import { auth } from "../config/firebase";
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail,fetchSignInMethodsForEmail, sendSignInLinkToEmail } from "firebase/auth";
 import { getFirestore, collection, getDocs, doc, query, where } from "firebase/firestore";
 import { useState } from "react";
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
@@ -21,6 +21,8 @@ export const Auth = () => {
 
     const db = getFirestore();
 
+    let user
+
     const signIn = async () => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
@@ -31,16 +33,39 @@ export const Auth = () => {
         }
     }
 
+    const actionCodeSettings = {
+        url: "http://localhost:3000/forget-password",
+        handleCodeInApp: true
+    }
+
     const handleForgotPassword = async () => {
         try {
             //await sendPasswordResetEmail(auth, forgotPasswordEmail);
             //setResetEmailSent(true);
 
             //check if the email exist
-            const methods = await auth.fetchSignInMethodsForEmail(forgotPasswordEmail);
-            if(!methods && methods.length <= 0) {
+            //not working right now
+            /*const methods = await auth.fetchSignInMethodsForEmail(forgotPasswordEmail);
+            if(methods && methods.length >= 0) {
                 throw new Error("Email does not exist")
-            }
+            }*/
+
+            sendSignInLinkToEmail(auth, forgotPasswordEmail, actionCodeSettings)
+                .then((userCredential) => {
+                    console.log("The email link has been sent")
+                    user = userCredential.user
+                    window.localStorage.setItem("emailForSignIn", forgotPasswordEmail)
+                })
+                .catch((error) => {
+                    console.log("Error sending sign-in link: " + error.message)
+                })
+
+            //there is no current user
+            console.log("my current user is: " + auth.currentUser);
+            //is not returning the method of signin
+            fetchSignInMethodsForEmail(auth, forgotPasswordEmail).then((result) => {
+                console.log("here are the results: " + result);
+            })
 
             let uid = null
             const userRef = collection(db, "users");
@@ -57,10 +82,15 @@ export const Auth = () => {
 
                 //confirms if the user id and security answer matches the document that also has the email
                 if((doc.data().username != userId) || (doc.data().securityAnswer != securityAnswer)) {
+                    console.log("this if-statement is triggered");
                     throw new Error("Invalid Inputs")
                 }
-            });  
-            
+            });
+
+            console.log("this is a valid user!!!")
+
+            //need to check if the password is valid and is not a previous password
+            //then update the password
             if(!isValidPassword(newPassword)) {
                 throw new Error("invalid password")
             }
@@ -78,6 +108,11 @@ export const Auth = () => {
     //checks to see if the account exist and if the user's input matches the security questions
     const accountExist = ({ email}) => {
 
+    }
+
+    const whoIsCurrentUser = async () => {
+        console.log("The current user is: " + auth.currentUser);
+        console.log("The user is: " + user)
     }
 
     return (
@@ -111,6 +146,7 @@ export const Auth = () => {
                         <div className="submit-button">
                             <button type="submit" onClick={signIn}>Submit</button>
                             <button type="button" onClick={() => setShowForgotPasswordPopup(true)}>Forgot Password</button>
+                            <button onClick={whoIsCurrentUser}>Show Current User</button>
                         </div>
                     </form>
                 </div>
