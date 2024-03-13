@@ -12,16 +12,12 @@ export const Auth = () => {
 
     const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
     const [resetEmailSent, setResetEmailSent] = useState(false);
-    const [userExist, setUserExist] = useState(true);
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
     const [userId, setUserId] = useState("");
     const [securityAnswer, setSecurityAnswer] = useState("");
-    const [newPassword, setNewPassword] = useState("");
     const [error, setError] = useState(null);
 
     const db = getFirestore();
-
-    let user
 
     const signIn = async () => {
         try {
@@ -33,45 +29,39 @@ export const Auth = () => {
         }
     }
 
-    const actionCodeSettings = {
+    //for sendSignInLinkToEmail()
+    /*const actionCodeSettings = {
         url: "http://localhost:3000/forget-password",
         handleCodeInApp: true
-    }
+    }*/
 
     const handleForgotPassword = async () => {
         try {
-            //await sendPasswordResetEmail(auth, forgotPasswordEmail);
-            //setResetEmailSent(true);
-
-            //check if the email exist
-            //not working right now
-            /*const methods = await auth.fetchSignInMethodsForEmail(forgotPasswordEmail);
-            if(methods && methods.length >= 0) {
-                throw new Error("Email does not exist")
-            }*/
-
-            sendSignInLinkToEmail(auth, forgotPasswordEmail, actionCodeSettings)
+            //allows the user to sign in with just their email but this will be left out for now.
+            /*sendSignInLinkToEmail(auth, forgotPasswordEmail, actionCodeSettings)
                 .then((userCredential) => {
                     console.log("The email link has been sent")
-                    user = userCredential.user
+                    const user = userCredential.user
                     window.localStorage.setItem("emailForSignIn", forgotPasswordEmail)
+                    console.log("the user is: " + user)
                 })
                 .catch((error) => {
                     console.log("Error sending sign-in link: " + error.message)
                 })
-
-            //there is no current user
-            console.log("my current user is: " + auth.currentUser);
-            //is not returning the method of signin
-            fetchSignInMethodsForEmail(auth, forgotPasswordEmail).then((result) => {
-                console.log("here are the results: " + result);
-            })
+            */
 
             let uid = null
             const userRef = collection(db, "users");
             const q = query(userRef, where("email", "==", forgotPasswordEmail));
 
+            //returns an array of documents based on our query
             const querySnapshot = await getDocs(q);
+
+            //checks to see if the user exist
+            if(querySnapshot.docs.length === 0) {
+                throw new Error("Invalid Email")
+            }
+
             querySnapshot.forEach((doc) => {
                 //test to make sure the correct document is retreived
                 console.log(doc.id, " => ", doc.data());
@@ -83,37 +73,16 @@ export const Auth = () => {
                 //confirms if the user id and security answer matches the document that also has the email
                 if((doc.data().username != userId) || (doc.data().securityAnswer != securityAnswer)) {
                     console.log("this if-statement is triggered");
-                    throw new Error("Invalid Inputs")
+                    throw new Error("Invalid User Id or Security Answer")
                 }
             });
 
-            console.log("this is a valid user!!!")
-
-            //need to check if the password is valid and is not a previous password
-            //then update the password
-            if(!isValidPassword(newPassword)) {
-                throw new Error("invalid password")
-            }
+            await sendPasswordResetEmail(auth, forgotPasswordEmail);
+            setResetEmailSent(true);
         } catch (error) {
             setError(error.message);
         }
     };
-
-    const isValidPassword = (password) => {
-        //const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\S]{8,}$/; Not sure if this is right
-        const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-        return regex.test(password);
-    }
-
-    //checks to see if the account exist and if the user's input matches the security questions
-    const accountExist = ({ email}) => {
-
-    }
-
-    const whoIsCurrentUser = async () => {
-        console.log("The current user is: " + auth.currentUser);
-        console.log("The user is: " + user)
-    }
 
     return (
         <div>
@@ -146,38 +115,12 @@ export const Auth = () => {
                         <div className="submit-button">
                             <button type="submit" onClick={signIn}>Submit</button>
                             <button type="button" onClick={() => setShowForgotPasswordPopup(true)}>Forgot Password</button>
-                            <button onClick={whoIsCurrentUser}>Show Current User</button>
                         </div>
                     </form>
                 </div>
             </div>
 
             {/* Forgot Password Popup */}
-            {/*{showForgotPasswordPopup && (
-                <div className="forgot-password-popup">
-                    <div className="forgot-password-content">
-                        <span className="close" onClick={() => setShowForgotPasswordPopup(false)}>&times;</span>
-                        <h2>Forgot Password</h2>
-                        {resetEmailSent ? (
-                            <p>Password reset email sent. Check your inbox.</p>
-                        ) : (
-                            <div>
-                                <input
-                                    type="email"
-                                    placeholder="Enter your email"
-                                    value={forgotPasswordEmail}
-                                    onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                                    required
-                                />
-                                <button onClick={handleForgotPassword}>Reset Password</button>
-                                {error && <p>{error}</p>}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}*/}
-
-            {/* testing  */}
             {showForgotPasswordPopup && (
                 <div className="forgot-password-popup">
                     <div className="forgot-password-content">
@@ -214,15 +157,6 @@ export const Auth = () => {
                                         placeholder="Enter Security Question Answer"
                                         value={securityAnswer}
                                         onChange={(e) => setSecurityAnswer(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <input
-                                        type="password"
-                                        placeholder="Password..."
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
                                         required
                                     />
                                 </div>
