@@ -6,8 +6,8 @@ const ChartOfAccounts = () => {
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
     const accounts = [
-        { accountNumber: 101, accountName: 'Cash', accountCategory: 'Asset', accountSubcategory: 'Current Asset', nominalBalance: 1000, financialStatement: 'Balance Sheet', description: 'Cash in hand and bank balances', balance: 5000, creationDate: '2024-01-01' },
-        { accountNumber: 102, accountName: 'Accounts Receivable', accountCategory: 'Asset', accountSubcategory: 'Current Asset', nominalBalance: 500, financialStatement: 'Balance Sheet', description: 'Amounts owed by customers', balance: 2500, creationDate: '2024-01-02' },
+        { accountNumber: 101, accountName: 'Cash', accountCategory: 'Asset', accountSubcategory: 'Current Asset', normalBalance: 'Debit', financialStatement: 'Balance Sheet', description: 'Cash in hand and bank balances', balance: 5000, creationDate: '2024-01-01' },
+        { accountNumber: 102, accountName: 'Accounts Receivable', accountCategory: 'Asset', accountSubcategory: 'Current Asset', normalBalance: 'Debit', financialStatement: 'Balance Sheet', description: 'Amounts owed by customers', balance: 2500, creationDate: '2024-01-02' },
         // Add accounts from user
     ];
 
@@ -44,7 +44,7 @@ const ChartOfAccounts = () => {
                     <th onClick={() => requestSort('accountName')}>Account Name</th>
                     <th onClick={() => requestSort('accountCategory')}>Account Category</th>
                     <th onClick={() => requestSort('accountSubcategory')}>Account Subcategory</th>
-                    <th onClick={() => requestSort('nominalBalance')}>Nominal Balance</th>
+                    <th onClick={() => requestSort('normalBalance')}>Normal Balance</th>
                     <th onClick={() => requestSort('financialStatement')}>Financial Statement</th>
                     <th onClick={() => requestSort('description')}>Description</th>
                     <th onClick={() => requestSort('balance')}>Balance</th>

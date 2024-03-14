@@ -148,6 +148,12 @@
 
 .accounts-table th {
     background-color: #f2f2f2;
+    cursor: pointer;
+}
+
+.accounts-table th:hover {
+    background-color: #2e2d2d;
+    color: white
 }
 
 .accounts-table tr:nth-child(even) {
