@@ -13,13 +13,26 @@ export const Auth = () => {
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
     const [resetEmailSent, setResetEmailSent] = useState(false);
     const [error, setError] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // Tracking if the current user is logged in
+    const [isLoggedIn, setIsLoggedIn] = useState(true); // Tracking if the current user is logged in
+    let fieldValue
 
     const signIn = async (e) => {
         e.preventDefault(); // Prevent page refresh on form submission
         try {
-            // Fetch user data from Firestore
+            //to get username of the current sign-in user
+            console.log("first check: start of log in current user: " + auth.currentUser.uid)
             const db = getFirestore();
+            const docRef = doc(db, "users", auth.currentUser.uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                fieldValue = docSnap.data().username;
+                console.log("the field value is now: " + fieldValue)
+            }
+            console.log("start of log in current user: " + docSnap.data().username)
+
+            // Fetch user data from Firestore
+            //const db = getFirestore();
             const userDoc = doc(db, 'users', email); // Assuming email is the user's document ID
             const userSnap = await getDoc(userDoc);
             if (userSnap.exists()) {
@@ -38,6 +51,7 @@ export const Auth = () => {
             await signInWithEmailAndPassword(auth, email, password);
             setIsLoggedIn(true); // Update the user's status
             alert(`You are now signed in as ${email}`);
+            console.log("after sign: " + auth.currentUser.uid)
             // If login is successful, you can redirect the user to another page or perform any other necessary actions
         } catch (error) {
             setError("Invalid email or password. Please try again."); // Set error message for incorrect password
@@ -59,7 +73,7 @@ export const Auth = () => {
     return (
         <div>
             <div className="container">
-                {isLoggedIn && <div className="username-display">{email}</div>} {/* Display username if logged in */}
+                {isLoggedIn && (<div className="username-display">{fieldValue}</div>)} {/* Display username if logged in */}
                 <Link to="/"><img src={BalanceWizardLogo} alt="logo" className="logo" /></Link>
                 <h1 className="title">Balance Wizard</h1>
                 
