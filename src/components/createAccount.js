@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg"; // Import the logo
 import { auth } from "../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -102,7 +102,9 @@ export const CreateAccount = () => {
     return (
         <div>
             <div className="container">
-                <img src={BalanceWizardLogo} alt="logo" className="logo" />
+                <Link to="/">
+                    <img src={BalanceWizardLogo} alt="logo" className="logo" />
+                </Link>
                 <h1 className="title">Create Account</h1>
             </div>
 

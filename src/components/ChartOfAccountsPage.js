@@ -22,7 +22,9 @@ const ChartOfAccountsPage = () => {
     return (
         <div>
             <div className="container">
-                <img src={BalanceWizardLogo} alt="logo" className="logo" />
+                <Link to="/">
+                    <img src={BalanceWizardLogo} alt="logo" className="logo" />
+                </Link>
                 <h1 className="title">Balance Wizard - Chart of Accounts</h1>
                 <div className="buttons">
                     <Link to="/login"><button>Login</button></Link>

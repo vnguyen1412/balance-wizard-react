@@ -13,6 +13,7 @@ export const Auth = () => {
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
     const [resetEmailSent, setResetEmailSent] = useState(false);
     const [error, setError] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // Tracking if the current user is logged in
 
     const signIn = async (e) => {
         e.preventDefault(); // Prevent page refresh on form submission
@@ -35,6 +36,8 @@ export const Auth = () => {
     
             // Proceed with signing in the user if not suspended
             await signInWithEmailAndPassword(auth, email, password);
+            setIsLoggedIn(true); // Update the user's status
+            alert(`You are now signed in as ${email}`);
             // If login is successful, you can redirect the user to another page or perform any other necessary actions
         } catch (error) {
             setError("Invalid email or password. Please try again."); // Set error message for incorrect password
@@ -56,8 +59,10 @@ export const Auth = () => {
     return (
         <div>
             <div className="container">
-                <img src={BalanceWizardLogo} alt="logo" className="logo" />
+                {isLoggedIn && <div className="username-display">{email}</div>} {/* Display username if logged in */}
+                <Link to="/"><img src={BalanceWizardLogo} alt="logo" className="logo" /></Link>
                 <h1 className="title">Balance Wizard</h1>
+                
                 <div className="buttons">
                     <Link to="/login"><button>Login</button></Link>
                     <span> | </span>
