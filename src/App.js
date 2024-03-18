@@ -7,6 +7,7 @@ import { CreateAccount } from "./components/createAccount";
 import { HomePage } from './components/HomePage';
 import AdminInterface from './components/adminInterface';
 import { ForgetPassword } from './components/forgetPassword';
+import Email from './components/SendEmail';
 
 function App () {
   return (
@@ -17,7 +18,7 @@ function App () {
                 <Route path="/create-account" element={<CreateAccount />} />  
                 <Route path="/admin-interface" element={<AdminInterface />} />
                 <Route path="/forget-password" element={<ForgetPassword />} />
-
+                <Route path="/send-email" element={<Email />} />
                 {/* Add more routes for other pages as needed */}
             </Routes>
       </Router>
