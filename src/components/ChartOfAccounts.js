@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { getAuth } from '@firebase/auth';
-import { getFirestore, setDoc, collection, getDocs, doc, query, where, updateDoc, getDoc, addDoc } from 'firebase/firestore';
+import { getFirestore, setDoc, collection, getDocs, doc, query, where, updateDoc, getDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 
 // Assuming the mock data and initial component setup is already provided
 
@@ -11,10 +11,10 @@ const ChartOfAccounts = () => {
         accountName: "",
         accountCategory: "Asset",
         accountSubcategory: "",
-        normalBalance: "",
-        financialStatement: "",
+        normalBalance: "Debit",
+        financialStatement: "Balance Statement",
         description: "",
-        balance: 0
+        balance: null
     });
     //a dictionary used to confirm if account number and account category formated correctly
     const accountCategoryFormat = {
@@ -45,7 +45,7 @@ const ChartOfAccounts = () => {
             const db = getFirestore();
             //logic to check that the inputs are valid
             if(!isValidAccountNumber(newAccountData.accountNumber)) {
-                setError("Invalid Account Number Format")
+                throw new Error("Invalid Account Number Format")
             }
 
             //change Account Number & Balance data type to be number
@@ -57,7 +57,7 @@ const ChartOfAccounts = () => {
             //checks to see if the Account Number is with in the Account Category range
             if((accountCategoryFormat[newAccountData.accountCategory] > finalAccountNumber) || (accountCategoryFormat[newAccountData.accountCategory] + 100) <= finalAccountNumber ) {
                 console.log("this error if-statement was triggered")
-                setError("Invalid! Account Number must match Account Category")
+                throw new Error("Invalid! Account Number must match Account Category")
             }
 
             //make sure that the account number doesn't exist yet
@@ -65,17 +65,26 @@ const ChartOfAccounts = () => {
             const q = query(accountCheckRef, where("accountNumber", "==", finalAccountNumber));
             const querySnapshot = await getDocs(q);
 
-            //If the account number already exist an error is thrown
             if(querySnapshot.docs.length > 0) {
                 console.log("this if-statement was triggered")
-                setError("Account number already exist")
+                throw new Error("Account number already exist")
             }
+            
+            //make sure the account name doesn't exist yet
+            const qAccountName = query(accountCheckRef, where("accountName", "==", newAccountData.accountName))
+            const queryAccountNameSnapshot = await getDocs(qAccountName)
+
+            if(queryAccountNameSnapshot.docs.length > 0) {
+                console.log("this second if-statement was triggered")
+                throw new Error("Account name already exist")
+            }
+
             console.log("you have reach the end and the account will be created")
             //creates a document based on the account number & name and add the account to the database
             const docName = newAccountData.accountNumber + " " +newAccountData.accountName
             console.log("name of the document: " + docName)
             console.log(newAccountData.accountNumber)
-            /*const accountRef = doc(db, "accounts", docName);
+            const accountRef = doc(db, "accounts", docName);
             await setDoc(accountRef, {
                 accountNumber: finalAccountNumber,
                 accountName: newAccountData.accountName,
@@ -85,10 +94,13 @@ const ChartOfAccounts = () => {
                 financialStatement: newAccountData.financialStatement,
                 description: newAccountData.description,
                 balance: finalBalance,
+                date: serverTimestamp(),
                 isActive: true
-            });*/
+            });
+
+            resetAddAccountForm()
         } catch (error) {
-            console.error('Error creating user:', error);
+            setError(error.message)
         }
     };
 
@@ -140,10 +152,10 @@ const ChartOfAccounts = () => {
             accountName: "",
             accountCategory: "Asset",
             accountSubcategory: "",
-            normalBalance: "",
-            financialStatement: "",
+            normalBalance: "Debit",
+            financialStatement: "Balance Statement",
             description: "",
-            balance: 0
+            balance: null
         }))
 
         setError(null)
