@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
 import { Link } from 'react-router-dom';
-import "./Styling.css"; // Importing the CSS file
+import './Styling.css';
 
-
-export const HomePage = () => {
+function DefaultPage(){
     return (
         <div>
             <div className="container">
@@ -29,9 +28,9 @@ export const HomePage = () => {
 
             <div className="blue-box">
                 <div className="user-box">
-                    <h2 className="user-box-title">Welcome to Balance Wizard</h2>
                 </div>
             </div>
         </div>
     );
-};
+}
+export default DefaultPage;

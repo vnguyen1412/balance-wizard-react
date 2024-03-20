@@ -1,24 +1,16 @@
 import ComposeEmail from "./ComposeEmail";
+import DefaultPage from "./DefaultScreen";
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
 import './Styling.css';
 
 function Email(){
     return (
         <div>
-            <div className="container">
-                <Link to="/">
-                    <img src={BalanceWizardLogo} alt="logo" className="logo" />
-                </Link>
-                <h2 className="title">Compose Email</h2>
-        </div>
-        <div className="blue-box">
-            <div  className="user-box">
+            <div className="overlay">
+                <h2 className="user-box-title">Email Page</h2>
                 <ComposeEmail />
             </div>
-            
-        </div>
+            <DefaultPage />
         </div>
         
     );

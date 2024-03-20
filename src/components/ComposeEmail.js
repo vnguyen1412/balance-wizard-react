@@ -13,7 +13,7 @@ export default class extends React.Component {
 
   render() {
     return (
-      <form>
+      <form className='emailPage'>
         <div>
             <textarea className='email' placeholder='To..' onChange={this.handleToChange} required value={this.state.to} rows={1} />
             <textarea className='email' placeholder='Subject..' onChange={this.handleSubjectChange} required value={this.state.subject} rows={1} />
