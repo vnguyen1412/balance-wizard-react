@@ -6,10 +6,12 @@ import { CreateAccount } from "./components/createAccount";
 import { HomePage } from './components/HomePage';
 import AdminInterface from './components/adminInterface';
 import ChartOfAccountsPage from './components/ChartOfAccountsPage';
+import { UserProvider } from "./components/userContext";
 
 function App () {
   return (
-      <Router>
+    <UserProvider>
+        <Router>
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<Auth />} />
@@ -19,7 +21,8 @@ function App () {
 
                 {/* Add more routes for other pages as needed */}
             </Routes>
-      </Router>
+        </Router>
+      </UserProvider>
   );
 };
 

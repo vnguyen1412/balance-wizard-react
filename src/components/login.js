@@ -5,6 +5,7 @@ import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
 import { Link } from 'react-router-dom';
 import { getFirestore, doc, getDoc } from 'firebase/firestore'; // Import Firestore functions
 import "./Styling.css"; // Importing the CSS file
+import { useUser } from './userContext';
 
 export const Auth = () => {
     const [email, setEmail] = useState("");
@@ -14,31 +15,21 @@ export const Auth = () => {
     const [resetEmailSent, setResetEmailSent] = useState(false);
     const [error, setError] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(true); // Tracking if the current user is logged in
-    let fieldValue
+    const { setUser } = useUser();
+    const { user } = useUser();
 
     const signIn = async (e) => {
         e.preventDefault(); // Prevent page refresh on form submission
         try {
             //to get username of the current sign-in user
-            console.log("first check: start of log in current user: " + auth.currentUser.uid)
-            const db = getFirestore();
-            const docRef = doc(db, "users", auth.currentUser.uid);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                fieldValue = docSnap.data().username;
-                console.log("the field value is now: " + fieldValue)
-            }
-            console.log("start of log in current user: " + docSnap.data().username)
-
-            // Fetch user data from Firestore
-            //const db = getFirestore();
+            const db = getFirestore();// Fetch user data from Firestore
             const userDoc = doc(db, 'users', email); // Assuming email is the user's document ID
             const userSnap = await getDoc(userDoc);
             if (userSnap.exists()) {
                 const userData = userSnap.data();
                 const { suspensionStartDate, suspensionExpiryDate } = userData;
                 const currentDate = new Date();
+                setUser({ username: userData.username })
     
                 // Check if the current date is within the suspension period
                 if (currentDate >= suspensionStartDate.toDate() && currentDate <= suspensionExpiryDate.toDate()) {
@@ -50,7 +41,7 @@ export const Auth = () => {
             // Proceed with signing in the user if not suspended
             await signInWithEmailAndPassword(auth, email, password);
             setIsLoggedIn(true); // Update the user's status
-            alert(`You are now signed in as ${email}`);
+            alert(`You are now signed in as ${user.username}`);
             console.log("after sign: " + auth.currentUser.uid)
             // If login is successful, you can redirect the user to another page or perform any other necessary actions
         } catch (error) {
@@ -73,7 +64,7 @@ export const Auth = () => {
     return (
         <div>
             <div className="container">
-                {isLoggedIn && (<div className="username-display">{fieldValue}</div>)} {/* Display username if logged in */}
+                <div className="username-display">{user.username}</div> {/* Display username if logged in */}
                 <Link to="/"><img src={BalanceWizardLogo} alt="logo" className="logo" /></Link>
                 <h1 className="title">Balance Wizard</h1>
                 
