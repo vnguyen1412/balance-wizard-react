@@ -202,11 +202,25 @@ const AdminInterface = () => {
     return (
         <div>
             <div className="container">
-                <Link to="/">
-                    <img src={BalanceWizardLogo} alt="logo" className="logo" />
-                </Link>
-                <h2 className="title">Admin Interface</h2>
+                <div className="container">
+                    <Link to="/">
+                        <img src={BalanceWizardLogo} alt="logo" className="logo" />
+                    </Link>
+                    <h2 className="title">Balance Wizard</h2>
+                </div>
+                <div className="buttons">
+                    <Link to="/login"><button>Login</button></Link>
+                    <span> | </span>
+                    <Link to="/create-account"><button>New User</button></Link>
+                </div>
             </div>
+
+            <div className="menu-bar">
+                <Link to="/admin-interface"><button>Admin Interface</button></Link>
+                <Link to="/send-email"><button>Send Email</button></Link>
+                <Link to="/search-menu"><button>Search Menu</button></Link>
+            </div>
+            
             <div className="blue-box">
                 <div className="user-box">
                     <h3>Current Users</h3>

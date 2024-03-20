@@ -87,8 +87,12 @@ export const Auth = () => {
     return (
         <div>
             <div className="container">
-                <img src={BalanceWizardLogo} alt="logo" className="logo" />
-                <h1 className="title">Balance Wizard</h1>
+                <div className="container">
+                    <Link to="/">
+                        <img src={BalanceWizardLogo} alt="logo" className="logo" />
+                    </Link>
+                    <h2 className="title">Balance Wizard</h2>
+                </div>
                 <div className="buttons">
                     <Link to="/login"><button>Login</button></Link>
                     <span> | </span>
@@ -97,7 +101,9 @@ export const Auth = () => {
             </div>
 
             <div className="menu-bar">
-                Menu Bar for Future Functions
+                <Link to="/admin-interface"><button>Admin Interface</button></Link>
+                <Link to="/send-email"><button>Send Email</button></Link>
+                <Link to="/search-menu"><button>Search Menu</button></Link>
             </div>
 
             <div className="blue-box">
