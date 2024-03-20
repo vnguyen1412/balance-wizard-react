@@ -1,5 +1,6 @@
 /* Top section */
 .container {
+    justify-content: space-between;
     background-color: white;
     padding: 20px;
     display: flex;
@@ -7,24 +8,46 @@
 }
 
 .logo {
-    width: 65px;
-    height: 65px;
+    width: 75px;
+    height: 75px;
     margin-right: 10px;
-    margin-left: 5px;
+}
+
+.user-fullname {
+    color: black;
+    font-size: 16px;
+}
+
+.balance-wizard-section {
+    display: flex;
+    align-items: center;
 }
 
 .title {
-    font-size: 36px;
+    font-size: 32px;
     color: black;
+    margin-right: 10px; 
     margin: 0;
 }
 
 .buttons {
+    position: absolute;
     font-size: 24px;
     color: black;
     margin-left: auto;
+    margin-bottom: 5px;
 }
 
+.user-fullname {
+    font-size: 16px;
+    color: black;
+}
+
+.auth-section .profile-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 /* Menu Bar */
 .menu-bar {
     background-color: #AFABAB;
@@ -161,9 +184,12 @@
 }
 
 .username-display {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    color: black;
+    margin-bottom: 5px;
     font-size: 16px;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
 }

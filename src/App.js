@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Auth } from "./components/login";
-import { CreateAccount } from "./components/createAccount";
+import { CreateAccount } from "./components/CreateAccount";
 import { HomePage } from './components/HomePage';
 import AdminInterface from './components/adminInterface';
 import ChartOfAccountsPage from './components/ChartOfAccountsPage';

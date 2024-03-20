@@ -1,7 +1,8 @@
 import { auth } from "../config/firebase";
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import { useState } from "react";
+import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "firebase/auth";
+import { useState, useEffect } from "react";
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
+import DefaultProfilePic from "./DefaultProfilePic.png";
 import { Link } from 'react-router-dom';
 import { getFirestore, doc, getDoc } from 'firebase/firestore'; // Import Firestore functions
 import "./Styling.css"; // Importing the CSS file
@@ -14,9 +15,8 @@ export const Auth = () => {
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
     const [resetEmailSent, setResetEmailSent] = useState(false);
     const [error, setError] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(true); // Tracking if the current user is logged in
     const { setUser } = useUser();
-    const { user } = useUser();
+    const { user, handleSignOut} = useUser();
 
     const signIn = async (e) => {
         e.preventDefault(); // Prevent page refresh on form submission
@@ -40,9 +40,7 @@ export const Auth = () => {
     
             // Proceed with signing in the user if not suspended
             await signInWithEmailAndPassword(auth, email, password);
-            setIsLoggedIn(true); // Update the user's status
-            alert(`You are now signed in as ${user.username}`);
-            console.log("after sign: " + auth.currentUser.uid)
+            alert(`You are now signed in as ${email}`);
             // If login is successful, you can redirect the user to another page or perform any other necessary actions
         } catch (error) {
             setError("Invalid email or password. Please try again."); // Set error message for incorrect password
@@ -50,7 +48,33 @@ export const Auth = () => {
             // Handle login errors here, such as displaying error messages to the user
         }
     }
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                // User is signed in, now fetch the username
+                const userDoc = doc(getFirestore(), 'users', currentUser.uid);
+                const userSnap = await getDoc(userDoc);
+                if (userSnap.exists()) {
+                    setUser({
+                        firstName: userSnap.data().firstName,
+                        lastName: userSnap.data().lastName,
+                        username: userSnap.data().username,
+                        profilePic: DefaultProfilePic
+                    });
+                    console.log("Username set to: ", userSnap.data().username);
+                } else {
+                    console.log("No user data found!");
+                }
+            } else {
+                // User is signed out
+                setUser({ username: '', profilePic: '' });
+            }
+        });
     
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+    }, [setUser]); // Dependency array includes setUser to ensure it's stable
 
     const handleForgotPassword = async () => {
         try {
@@ -64,14 +88,31 @@ export const Auth = () => {
     return (
         <div>
             <div className="container">
-                <div className="username-display">{user.username}</div> {/* Display username if logged in */}
-                <Link to="/"><img src={BalanceWizardLogo} alt="logo" className="logo" /></Link>
-                <h1 className="title">Balance Wizard</h1>
-                
-                <div className="buttons">
-                    <Link to="/login"><button>Login</button></Link>
-                    <span> | </span>
-                    <Link to="/create-account"><button>New User</button></Link>
+                <div className="balance-wizard-section">
+                    <Link to="/"><img src={BalanceWizardLogo} alt="logo" className="logo" /></Link>
+                    <div>
+                        <h1 className="title">Balance Wizard</h1>
+                        {user.username && user.firstName && user.lastName && (
+                            <div className="user-fullname">{`${user.firstName} ${user.lastName}`}</div>)
+                        }
+                    </div>
+                </div>
+                <div className="auth-section">
+                    {user.username ? (
+                        <>
+                            <div className="profile-column">
+                                <img src={user.profilePic} alt="Profile Picture" className="profile-pic" />
+                                <div className="username-display">{user.username}</div>
+                                <button onClick={handleSignOut}>Logout</button>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/login"><button>Login</button></Link>
+                            <span> | </span>
+                            <Link to="/create-account"><button>New User</button></Link>
+                        </>
+                    )}
                 </div>
             </div>
 
