@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getAuth } from '@firebase/auth';
 import { getFirestore, setDoc, collection, getDocs, doc, query, where, updateDoc, getDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -16,6 +16,7 @@ const ChartOfAccounts = () => {
         description: "",
         balance: null
     });
+    const [accounts, setAccounts] = useState([]);
     //a dictionary used to confirm if account number and account category formated correctly
     const accountCategoryFormat = {
         "Asset": 100,
@@ -27,11 +28,21 @@ const ChartOfAccounts = () => {
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
     const [error, setError] = useState(null)
 
-    const accounts = [
-        { accountNumber: 101, accountName: 'Cash', accountCategory: 'Asset', accountSubcategory: 'Current Asset', normalBalance: 'Debit', financialStatement: 'Balance Sheet', description: 'Cash in hand and bank balances', balance: 5000, creationDate: '2024-01-01' },
-        { accountNumber: 102, accountName: 'Accounts Receivable', accountCategory: 'Asset', accountSubcategory: 'Current Asset', normalBalance: 'Debit', financialStatement: 'Balance Sheet', description: 'Amounts owed by customers', balance: 2500, creationDate: '2024-01-02' },
-        // Add accounts from user
-    ];
+    useEffect(() => {
+        const fetchAccounts = async () => {
+            try {
+                const db = getFirestore();
+                const accountsCollection = collection(db, 'accounts');
+                const accountsSnapshot = await getDocs(accountsCollection);
+                const accountsData = accountsSnapshot.docs.map(doc => doc.data());
+                setAccounts(accountsData);
+            } catch (error) {
+                setError(error.message);
+            }
+        };
+
+        fetchAccounts();
+    }, []); // Empty dependency array ensures the effect runs only once, on component mount
 
     const handleSubmitCreate = async (event) => {
         event.preventDefault(); // Prevent default form submission behavior
