@@ -54,9 +54,9 @@ const ChartOfAccountsPage = () => {
             </div>
 
             <div className="menu-bar">
-                Menu Bar for Future Functions
-                <Link to="/admin-interface"><button>Admin Interface</button></Link>
-                <Link to="/chart"><button>Charts</button></Link>
+                <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
+                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
+                <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
             </div>
 
             <div className="blue-box">
