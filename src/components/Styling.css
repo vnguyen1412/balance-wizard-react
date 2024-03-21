@@ -263,11 +263,11 @@
 
 .overlay {
     position: absolute;
-    top: 66%;
-    left: 50%;
+    top: 22%;
+    left: 88%;
     transform: translate(-50%, -50%);
-    width: 100%;
-    height: 90%;
+    width: 25%;
+    height: 10%;
 }
 
 .searchBar {
@@ -281,7 +281,40 @@
     font-size: 16px;
     text-align: left;
     position: absolute;
-    top: 9%;
+    top: 75%;
     left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.smallText {
+    background-color: none;
+    color: black;
+    padding: 5px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: center;
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.searchPB {
+    background-color: white;
+    color: black;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid black;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    position: absolute;
+    margin-right: 5px;
+    margin-left: 5px;
+    top: 75%;
+    left: 75%;
     transform: translate(-50%, -50%);
 }
