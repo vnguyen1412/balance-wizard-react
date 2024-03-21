@@ -1,11 +1,26 @@
-import React from 'react';
-import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import "./Styling.css"; // Importing the CSS file
+import BalanceWizardLogo from './BalanceWizardLogo.jpg';
+import ChartOfAccounts from './ChartOfAccounts';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import './Styling.css';
 import { useUser } from './userContext';
 
-export const HomePage = () => {
+const ChartOfAccountsPage = () => {
     const { user, handleSignOut } = useUser();
+    const [startDate, setStartDate] = useState(new Date());
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+    
+
+    // Define accounts data (mock or from API)
+    const accounts = [
+        // Your account data here
+    ];
+
+    const requestSort = (key) => {
+        // Sort logic
+    };
 
     return (
         <div>
@@ -39,17 +54,22 @@ export const HomePage = () => {
             </div>
 
             <div className="menu-bar">
+                Menu Bar for Future Functions
+                <Link to="/admin-interface"><button>Admin Interface</button></Link>
                 <Link to="/chart"><button>Charts</button></Link>
-                <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
-                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
-                <Link to="/search-menu"><button className='menuBarButtons'>Search Menu</button></Link>
             </div>
 
             <div className="blue-box">
                 <div className="user-box">
-                    <h2 className="user-box-title">Welcome to Balance Wizard</h2>
+                    <div className="title-container">
+                        <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="calendar-input" />
+                        <h2 className="user-box-title">Chart of Accounts</h2>
+                    </div>
+                    <ChartOfAccounts accounts={accounts} sortConfig={sortConfig} requestSort={requestSort} />
                 </div>
             </div>
         </div>
     );
 };
+
+export default ChartOfAccountsPage;

@@ -6,24 +6,29 @@ import { Auth } from "./components/login";
 import { CreateAccount } from "./components/createAccount";
 import { HomePage } from './components/HomePage';
 import AdminInterface from './components/adminInterface';
+import ChartOfAccountsPage from './components/ChartOfAccountsPage';
+import { UserProvider } from "./components/userContext";
 import { ForgetPassword } from './components/forgetPassword';
 import Email from './components/SendEmail/SendEmailPage';
 import Search from './components/SearchMenu/SearchPage';
 
 function App () {
   return (
-      <Router>
+    <UserProvider>
+        <Router>
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<Auth />} />
                 <Route path="/create-account" element={<CreateAccount />} />  
                 <Route path="/admin-interface" element={<AdminInterface />} />
+                <Route path="/chart" element={<ChartOfAccountsPage />} />
                 <Route path="/forget-password" element={<ForgetPassword />} />
                 <Route path="/send-email" element={<Email />} />
                 <Route path="/search-menu" element={<Search />} />
                 {/* Add more routes for other pages as needed */}
             </Routes>
-      </Router>
+        </Router>
+      </UserProvider>
   );
 };
 

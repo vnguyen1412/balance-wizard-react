@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg"; // Import the logo
 import { auth } from "../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -55,7 +55,9 @@ export const CreateAccount = () => {
                 securityAnswer: userData.securityAnswer,
                 role: "Accountant",
                 status: "Pending",
-                username: username
+                username: username,
+                suspensionStartDate: "",
+                suspensionExpiryDate: ""
             });
             // Send user data to Cloud Function for approval
             await fetch('/requestAccountCreation', {

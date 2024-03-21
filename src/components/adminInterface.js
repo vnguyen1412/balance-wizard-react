@@ -6,12 +6,14 @@ import { isAdmin } from './auth';
 import { auth } from "../config/firebase";
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
 import './Styling.css';
+import { useUser } from './userContext';
 
 const AdminInterface = () => {
     const [currentUsers, setCurrentUsers] = useState([]);
     const [pendingUsers, setPendingUsers] = useState([]);
     const [editingUser, setEditingUser] = useState(null);
     const [resetSent, setResetSent] = useState(false);
+    const { user, handleSignOut } = useUser();
     const [editFormData, setEditFormData] = useState({
         firstName: "",
         lastName: "",
@@ -202,16 +204,31 @@ const AdminInterface = () => {
     return (
         <div>
             <div className="container">
-                <div className="container">
-                    <Link to="/">
-                        <img src={BalanceWizardLogo} alt="logo" className="logo" />
-                    </Link>
-                    <h2 className="title">Balance Wizard</h2>
+                <div className="balance-wizard-section">
+                    <Link to="/"><img src={BalanceWizardLogo} alt="logo" className="logo" /></Link>
+                    <div>
+                        <h1 className="title">Balance Wizard</h1>
+                        {user.username && user.firstName && user.lastName && (
+                            <div className="user-fullname">{`${user.firstName} ${user.lastName}`}</div>)
+                        }
+                    </div>
                 </div>
-                <div className="buttons">
-                    <Link to="/login"><button>Login</button></Link>
-                    <span> | </span>
-                    <Link to="/create-account"><button>New User</button></Link>
+                <div className="auth-section">
+                    {user.username ? (
+                        <>
+                            <div className="profile-column">
+                                <img src={user.profilePic} alt="Profile Picture" className="profile-pic" />
+                                <div className="username-display">{user.username}</div>
+                                <button onClick={handleSignOut}>Logout</button>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/login"><button>Login</button></Link>
+                            <span> | </span>
+                            <Link to="/create-account"><button>New User</button></Link>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -311,6 +328,14 @@ const AdminInterface = () => {
                                     <option value="Manager">Manager</option>
                                     <option value="Administrator">Administrator</option>
                                 </select>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="suspensionStartDate">Suspension Start Date:</label>
+                                <input type="date" name="suspensionStartDate" value={editFormData.suspensionStartDate} onChange={handleEditChange} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="suspensionExpiryDate">Suspension Expiry Date:</label>
+                                <input type="date" name="suspensionExpiryDate" value={editFormData.suspensionExpiryDate} onChange={handleEditChange} />
                             </div>
                             <button type="submit">Save Changes</button>
                             <button onClick={() => setEditingUser(null)}>Cancel</button>

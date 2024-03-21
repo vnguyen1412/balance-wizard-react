@@ -1,5 +1,6 @@
 /* Top section */
 .container {
+    justify-content: space-between;
     background-color: white;
     padding: 20px;
     display: flex;
@@ -7,25 +8,47 @@
 }
 
 .logo {
-    width: 65px;
-    height: 65px;
+    width: 75px;
+    height: 75px;
     margin-right: 10px;
-    margin-left: 5px;
+}
+
+.user-fullname {
+    color: black;
+    font-size: 16px;
+}
+
+.balance-wizard-section {
+    display: flex;
+    align-items: center;
 }
 
 .title {
     font-family: "Freestyle Script";
     font-size: 36px;
     color: black;
+    margin-right: 10px; 
     margin: 0;
 }
 
 .buttons {
+    position: absolute;
     font-size: 24px;
     color: black;
     margin-left: auto;
+    margin-bottom: 5px;
 }
 
+.user-fullname {
+    font-size: 16px;
+    color: black;
+}
+
+.auth-section .profile-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 /* Menu Bar */
 .menu-bar {
     background-color: #AFABAB;
@@ -152,6 +175,40 @@
     margin-top: 0;
 }
 
+.accounts-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.accounts-table th, .accounts-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.accounts-table th {
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+
+.accounts-table th:hover {
+    background-color: #2e2d2d;
+    color: white
+}
+
+.accounts-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.username-display {
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
 /*just to center items & space them a bit*/
 .center {
     display: flex;

@@ -1,10 +1,12 @@
 import { auth } from "../config/firebase";
-import { signInWithEmailAndPassword, sendPasswordResetEmail,fetchSignInMethodsForEmail, sendSignInLinkToEmail } from "firebase/auth";
-import { getFirestore, collection, getDocs, doc, query, where } from "firebase/firestore";
-import { useState } from "react";
+import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "firebase/auth";
+import { useState, useEffect } from "react";
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
+import DefaultProfilePic from "./DefaultProfilePic.png";
 import { Link } from 'react-router-dom';
+import { getFirestore, doc, getDoc } from 'firebase/firestore'; // Import Firestore functions
 import "./Styling.css"; // Importing the CSS file
+import { useUser } from './userContext';
 
 export const Auth = () => {
     const [email, setEmail] = useState("");
@@ -16,24 +18,66 @@ export const Auth = () => {
     const [userId, setUserId] = useState("");
     const [securityAnswer, setSecurityAnswer] = useState("");
     const [error, setError] = useState(null);
+    const { setUser } = useUser();
+    const { user, handleSignOut} = useUser();
 
-    const db = getFirestore();
-
-    const signIn = async () => {
+    const signIn = async (e) => {
+        e.preventDefault(); // Prevent page refresh on form submission
         try {
+            //to get username of the current sign-in user
+            const db = getFirestore();// Fetch user data from Firestore
+            const userDoc = doc(db, 'users', email); // Assuming email is the user's document ID
+            const userSnap = await getDoc(userDoc);
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                const { suspensionStartDate, suspensionExpiryDate } = userData;
+                const currentDate = new Date();
+                setUser({ username: userData.username })
+    
+                // Check if the current date is within the suspension period
+                if (currentDate >= suspensionStartDate.toDate() && currentDate <= suspensionExpiryDate.toDate()) {
+                    setError("Access denied. Your account is suspended until further notice.");
+                    return;
+                }
+            }
+    
+            // Proceed with signing in the user if not suspended
             await signInWithEmailAndPassword(auth, email, password);
+            alert(`You are now signed in as ${email}`);
             // If login is successful, you can redirect the user to another page or perform any other necessary actions
         } catch (error) {
+            setError("Invalid email or password. Please try again."); // Set error message for incorrect password
             console.error(error);
             // Handle login errors here, such as displaying error messages to the user
         }
     }
 
-    //for sendSignInLinkToEmail()
-    /*const actionCodeSettings = {
-        url: "http://localhost:3000/forget-password",
-        handleCodeInApp: true
-    }*/
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                // User is signed in, now fetch the username
+                const userDoc = doc(getFirestore(), 'users', currentUser.uid);
+                const userSnap = await getDoc(userDoc);
+                if (userSnap.exists()) {
+                    setUser({
+                        firstName: userSnap.data().firstName,
+                        lastName: userSnap.data().lastName,
+                        username: userSnap.data().username,
+                        profilePic: DefaultProfilePic
+                    });
+                    console.log("Username set to: ", userSnap.data().username);
+                } else {
+                    console.log("No user data found!");
+                }
+            } else {
+                // User is signed out
+                setUser({ username: '', profilePic: '' });
+            }
+        });
+    
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+    }, [setUser]); // Dependency array includes setUser to ensure it's stable
 
     const handleForgotPassword = async () => {
         try {
@@ -87,16 +131,31 @@ export const Auth = () => {
     return (
         <div>
             <div className="container">
-                <div className="container">
-                    <Link to="/">
-                        <img src={BalanceWizardLogo} alt="logo" className="logo" />
-                    </Link>
-                    <h2 className="title">Balance Wizard</h2>
+                <div className="balance-wizard-section">
+                    <Link to="/"><img src={BalanceWizardLogo} alt="logo" className="logo" /></Link>
+                    <div>
+                        <h1 className="title">Balance Wizard</h1>
+                        {user.username && user.firstName && user.lastName && (
+                            <div className="user-fullname">{`${user.firstName} ${user.lastName}`}</div>)
+                        }
+                    </div>
                 </div>
-                <div className="buttons">
-                    <Link to="/login"><button>Login</button></Link>
-                    <span> | </span>
-                    <Link to="/create-account"><button>New User</button></Link>
+                <div className="auth-section">
+                    {user.username ? (
+                        <>
+                            <div className="profile-column">
+                                <img src={user.profilePic} alt="Profile Picture" className="profile-pic" />
+                                <div className="username-display">{user.username}</div>
+                                <button onClick={handleSignOut}>Logout</button>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/login"><button>Login</button></Link>
+                            <span> | </span>
+                            <Link to="/create-account"><button>New User</button></Link>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -122,6 +181,7 @@ export const Auth = () => {
                             <button type="submit" onClick={signIn}>Submit</button>
                             <button type="button" onClick={() => setShowForgotPasswordPopup(true)}>Forgot Password</button>
                         </div>
+                        {error && <p className="error-message">{error}</p>} {/* Display error message */}
                     </form>
                 </div>
             </div>
@@ -167,7 +227,7 @@ export const Auth = () => {
                                     />
                                 </div>
                                 <button onClick={handleForgotPassword}>Reset Password</button>
-                                {error && <p>{error}</p>}
+                                {error && <p className="error-message">{error}</p>} {/* Display error message */}
                             </div>
                         )}
                     </div>
