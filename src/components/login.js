@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
 import DefaultProfilePic from "./DefaultProfilePic.png";
 import { Link } from 'react-router-dom';
-import { getFirestore, doc, getDoc } from 'firebase/firestore'; // Import Firestore functions
+import { getFirestore, doc, getDoc, collection, query, where, db } from 'firebase/firestore'; // Import Firestore functions
 import "./Styling.css"; // Importing the CSS file
 import { useUser } from './userContext';
 
@@ -99,7 +99,7 @@ export const Auth = () => {
             const q = query(userRef, where("email", "==", forgotPasswordEmail));
 
             //returns an array of documents based on our query
-            const querySnapshot = await getDocs(q);
+            const querySnapshot = await getDoc(q);
 
             //checks to see if the user exist
             if(querySnapshot.docs.length === 0) {
