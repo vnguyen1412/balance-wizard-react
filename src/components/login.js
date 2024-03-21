@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
 import DefaultProfilePic from "./DefaultProfilePic.png";
 import { Link } from 'react-router-dom';
-import { getFirestore, doc, getDoc, collection, query, where, db } from 'firebase/firestore'; // Import Firestore functions
+import { getFirestore, doc, getDoc, collection, query, where } from 'firebase/firestore'; // Import Firestore functions
 import "./Styling.css"; // Importing the CSS file
 import { useUser } from './userContext';
 
@@ -93,7 +93,7 @@ export const Auth = () => {
                     console.log("Error sending sign-in link: " + error.message)
                 })
             */
-
+            const db = getFirestore();// Fetch user data from Firestore
             let uid = null
             const userRef = collection(db, "users");
             const q = query(userRef, where("email", "==", forgotPasswordEmail));

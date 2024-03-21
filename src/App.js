@@ -10,7 +10,6 @@ import ChartOfAccountsPage from './components/ChartOfAccountsPage';
 import { UserProvider } from "./components/userContext";
 import { ForgetPassword } from './components/forgetPassword';
 import Email from './components/SendEmail/SendEmailPage';
-import Search from './components/SearchMenu/SearchPage';
 
 function App () {
   return (
@@ -24,7 +23,6 @@ function App () {
                 <Route path="/chart" element={<ChartOfAccountsPage />} />
                 <Route path="/forget-password" element={<ForgetPassword />} />
                 <Route path="/send-email" element={<Email />} />
-                <Route path="/search-menu" element={<Search />} />
                 {/* Add more routes for other pages as needed */}
             </Routes>
         </Router>

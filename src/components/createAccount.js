@@ -4,7 +4,6 @@ import BalanceWizardLogo from "./BalanceWizardLogo.jpg"; // Import the logo
 import { auth } from "../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, setDoc, doc } from "firebase/firestore";
-import { Link } from 'react-router-dom';
 // import { sendEmailToAdmin } from "../functions/emailFunctions";
 import './Styling.css';
 import { useNavigate } from 'react-router-dom';
@@ -138,7 +137,6 @@ export const CreateAccount = () => {
             <div className="menu-bar">
                 <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
                 <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
-                <Link to="/search-menu"><button className='menuBarButtons'>Search Menu</button></Link>
             </div>
 
             <div className="blue-box">

@@ -42,7 +42,6 @@ export const HomePage = () => {
                 <Link to="/chart"><button>Charts</button></Link>
                 <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
                 <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
-                <Link to="/search-menu"><button className='menuBarButtons'>Search Menu</button></Link>
             </div>
 
             <div className="blue-box">

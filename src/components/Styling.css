@@ -209,6 +209,8 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
+}
+
 /*just to center items & space them a bit*/
 .center {
     display: flex;
