@@ -48,6 +48,6 @@ export default class extends React.Component {
       this.setState({ to: '', subject: '', body: '' });
     })
     // Handle errors here however you like, or use a React error boundary
-    .catch(err => console.error('Failed to send email: ', err))
+    .catch(err => alert('Failed to send email: ' + err))
   }
 }

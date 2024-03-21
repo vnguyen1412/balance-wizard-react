@@ -6,7 +6,7 @@ import '../Styling.css';
 function Email(){
     return (
         <div>
-            <div className="overlay">
+            <div className="emailOverlay">
                 <h2 className="user-box-title">Email Page</h2>
                 <ComposeEmail />
             </div>

@@ -224,9 +224,18 @@
 
 .emailPage {
     position: absolute;
-    top: 30%;
+    top: 51%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.emailOverlay {
+    position: absolute;
+    top: 43%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 75%;
+    height: 50%;
 }
 
 .email {
