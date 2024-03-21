@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import DefaultPage from './DefaultScreen';
-import './Styling.css';
+import DefaultPage from '../DefaultScreen';
+import '../Styling.css';
 
 function Search(){
     return (

@@ -35,6 +35,21 @@
     border: 1px solid black;
 }
 
+.menuBarButtons {
+    background-color: white;
+    color: black;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid black;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+
 /* Blue Box */
 .blue-box {
     background-color: #8FAADC;
@@ -189,7 +204,7 @@
 
 .overlay {
     position: absolute;
-    top: 64%;
+    top: 66%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 100%;

@@ -1,7 +1,7 @@
 import ComposeEmail from "./ComposeEmail";
-import DefaultPage from "./DefaultScreen";
+import DefaultPage from "../DefaultScreen";
 import React, { useEffect, useState } from 'react';
-import './Styling.css';
+import '../Styling.css';
 
 function Email(){
     return (

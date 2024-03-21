@@ -7,8 +7,8 @@ import { CreateAccount } from "./components/createAccount";
 import { HomePage } from './components/HomePage';
 import AdminInterface from './components/adminInterface';
 import { ForgetPassword } from './components/forgetPassword';
-import Email from './components/SendEmail';
-import Search from './components/SearchMenu';
+import Email from './components/SendEmail/SendEmailPage';
+import Search from './components/SearchMenu/SearchPage';
 
 function App () {
   return (

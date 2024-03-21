@@ -1,5 +1,5 @@
 import React from 'react';
-import './Styling.css';
+import '../Styling.css';
 
 export default class extends React.Component {
   constructor(props) {
