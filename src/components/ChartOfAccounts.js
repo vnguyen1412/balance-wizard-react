@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getFirestore, setDoc, collection, getDocs, doc, query, where, updateDoc, getDoc, addDoc, serverTimestamp } from 'firebase/firestore';
-
-// Assuming the mock data and initial component setup is already provided
+import { auth } from "../config/firebase";
 
 const ChartOfAccounts = () => {
     const [addAccountPopup, setAddAccountPopup] = useState(false);
@@ -18,6 +17,20 @@ const ChartOfAccounts = () => {
         balance: null
     });
     const [accounts, setAccounts] = useState([]);
+    const currentDate = new Date();
+
+    // Get date components
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so we add 1
+    const day = String(currentDate.getDate()).padStart(2, '0');
+
+    // Get time components
+    const hours = String(currentDate.getHours()).padStart(2, '0');
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+    // Format date and time as a string
+    const currentDateTimeString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     //a dictionary used to confirm if account number and account category formated correctly
     const accountCategoryFormat = {
         "Asset": 100,
@@ -47,21 +60,41 @@ const ChartOfAccounts = () => {
 
     const handleSubmitEdit = async (event) => {
         event.preventDefault(); // Prevent default form submission behavior
-        console.log('Selected Account:', selectedAccount); // Check the value of selectedAccount
         // Logic for updating the selected account in Firestore
         try {
+            const user = auth.currentUser;
             const db = getFirestore();
             const accountRef = doc(db, 'accounts', selectedAccount.id);
+            
+            // Fetch the current document to obtain a copy before changes
+            const oldAccountSnapshot = await getDoc(accountRef);
+            const oldAccountData = oldAccountSnapshot.data();
+
+            // Log the user ID, previous account data, and updated account data
+            try {
+                const logRef = doc(db, "changeLog", "Account Edit " + currentDateTimeString)
+
+                await setDoc(logRef, {
+                    userId: user.uid,
+                    action: 'Account edited', // You can customize this based on your needs
+                    accountBeforeChanges: oldAccountData, // Assuming selectedAccount holds the account state before changes
+                    accountAfterChanges: selectedAccount,
+                    timestamp: serverTimestamp() // Timestamp of when the change was made
+                });
+            } catch (error) {
+                console.error('Error logging changes:', error);
+            }
+            // Update the account document with the new data
             await setDoc(accountRef, selectedAccount);
             setEditAccountPopup(false);
 
             // Update the local state with the edited account data
             setAccounts(accounts.map(account => {
-            if (account.id === selectedAccount.id) {
-                return selectedAccount;
-            }
-            return account;
-        }));
+                if (account.id === selectedAccount.id) {
+                    return selectedAccount;
+                }
+                return account;
+            }));
         } catch (error) {
             setError(error.message);
         }
@@ -128,7 +161,7 @@ const ChartOfAccounts = () => {
                 financialStatement: newAccountData.financialStatement,
                 description: newAccountData.description,
                 balance: finalBalance,
-                date: serverTimestamp(),
+                date: currentDateTimeString,
                 isActive: true
             });
 
@@ -214,7 +247,7 @@ const ChartOfAccounts = () => {
                         <th onClick={() => requestSort('financialStatement')}>Financial Statement</th>
                         <th onClick={() => requestSort('description')}>Description</th>
                         <th onClick={() => requestSort('balance')}>Balance</th>
-                        <th onClick={() => requestSort('creationDate')}>Creation Date</th>
+                        <th onClick={() => requestSort('date')}>Creation Date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -236,8 +269,7 @@ const ChartOfAccounts = () => {
                             <td>{account.financialStatement}</td>
                             <td>{account.description}</td>
                             <td>{account.balance}</td>
-                            <td>{account.creationDate}</td>
-                            {/* Table rows remain unchanged */}
+                            <td>{account.date}</td>
                         </tr>
                     ))}
                 </tbody>
