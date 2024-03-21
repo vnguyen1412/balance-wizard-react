@@ -7,7 +7,8 @@ import { CreateAccount } from "./components/createAccount";
 import { HomePage } from './components/HomePage';
 import AdminInterface from './components/adminInterface';
 import { ForgetPassword } from './components/forgetPassword';
-import Email from './components/SendEmail';
+import Email from './components/SendEmail/SendEmailPage';
+import Search from './components/SearchMenu/SearchPage';
 
 function App () {
   return (
@@ -19,6 +20,7 @@ function App () {
                 <Route path="/admin-interface" element={<AdminInterface />} />
                 <Route path="/forget-password" element={<ForgetPassword />} />
                 <Route path="/send-email" element={<Email />} />
+                <Route path="/search-menu" element={<Search />} />
                 {/* Add more routes for other pages as needed */}
             </Routes>
       </Router>

@@ -87,10 +87,12 @@ export const Auth = () => {
     return (
         <div>
             <div className="container">
-                <Link to="/">
-                    <img src={BalanceWizardLogo} alt="logo" className="logo" />
-                </Link>
-                <h1 className="title">Balance Wizard</h1>
+                <div className="container">
+                    <Link to="/">
+                        <img src={BalanceWizardLogo} alt="logo" className="logo" />
+                    </Link>
+                    <h2 className="title">Balance Wizard</h2>
+                </div>
                 <div className="buttons">
                     <Link to="/login"><button>Login</button></Link>
                     <span> | </span>
@@ -99,7 +101,9 @@ export const Auth = () => {
             </div>
 
             <div className="menu-bar">
-                Menu Bar for Future Functions
+                <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
+                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
+                <Link to="/search-menu"><button className='menuBarButtons'>Search Menu</button></Link>
             </div>
 
             <div className="blue-box">
