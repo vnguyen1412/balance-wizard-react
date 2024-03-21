@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { getAuth } from '@firebase/auth';
 import { getFirestore, setDoc, collection, getDocs, doc, query, where, updateDoc, getDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 
 // Assuming the mock data and initial component setup is already provided
 
 const ChartOfAccounts = () => {
     const [addAccountPopup, setAddAccountPopup] = useState(false);
+    const [editAccountPopup, setEditAccountPopup] = useState(false);
+    const [selectedAccount, setSelectedAccount] = useState(null);
     const [newAccountData, setNewAccountData] = useState({
         accountNumber: 100,
         accountName: "",
@@ -34,7 +35,7 @@ const ChartOfAccounts = () => {
                 const db = getFirestore();
                 const accountsCollection = collection(db, 'accounts');
                 const accountsSnapshot = await getDocs(accountsCollection);
-                const accountsData = accountsSnapshot.docs.map(doc => doc.data());
+                const accountsData = accountsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 setAccounts(accountsData);
             } catch (error) {
                 setError(error.message);
@@ -43,6 +44,28 @@ const ChartOfAccounts = () => {
 
         fetchAccounts();
     }, []); // Empty dependency array ensures the effect runs only once, on component mount
+
+    const handleSubmitEdit = async (event) => {
+        event.preventDefault(); // Prevent default form submission behavior
+        console.log('Selected Account:', selectedAccount); // Check the value of selectedAccount
+        // Logic for updating the selected account in Firestore
+        try {
+            const db = getFirestore();
+            const accountRef = doc(db, 'accounts', selectedAccount.id);
+            await setDoc(accountRef, selectedAccount);
+            setEditAccountPopup(false);
+
+            // Update the local state with the edited account data
+            setAccounts(accounts.map(account => {
+            if (account.id === selectedAccount.id) {
+                return selectedAccount;
+            }
+            return account;
+        }));
+        } catch (error) {
+            setError(error.message);
+        }
+    };
 
     const handleSubmitCreate = async (event) => {
         event.preventDefault(); // Prevent default form submission behavior
@@ -176,7 +199,8 @@ const ChartOfAccounts = () => {
 
     return (
         <div>
-            <button onClick={() => setAddAccountPopup(true)}>Add Account</button> {/* Button to open the create user popup */}
+            <button onClick={() => setAddAccountPopup(true)}>Add Account</button> 
+            <button onClick={() => setEditAccountPopup(true)}>Edit Account</button>
             <table className="accounts-table">
                 <thead>
                     <tr>
@@ -197,7 +221,12 @@ const ChartOfAccounts = () => {
                     {sortedAccounts.map((account, index) => (
                         <tr key={index}>
                             <td>
-                                <input type="checkbox"/>
+                                <input
+                                    type="radio"
+                                    name="selectedAccount"
+                                    onChange={() => setSelectedAccount(account)}
+                                    checked={selectedAccount === account}
+                                />                           
                             </td>
                             <td>{account.accountNumber}</td>
                             <td>{account.accountName}</td>
@@ -265,6 +294,63 @@ const ChartOfAccounts = () => {
                             </div>
                             <button type="submit">Add Account</button>
                             <button onClick={resetAddAccountForm}>Cancel</button>
+                        </form>
+                        {error && <p className="error-message">{error}</p>}
+                    </div>
+                </div>
+            )}
+            {editAccountPopup && selectedAccount && (
+                <div className="popup">
+                    <div className="popup-content">
+                        <h3>Edit Account</h3>
+                        <form onSubmit={handleSubmitEdit}>
+                            <div className="form-group">
+                                <label htmlFor="editAccountNumber">Account Number:</label>
+                                <input type="number" name="editAccountNumber" value={selectedAccount.accountNumber} onChange={(e) => setSelectedAccount(prevAccount => ({ ...prevAccount, accountNumber: e.target.value }))} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="editAccountName">Account Name:</label>
+                                <input type="text" name="editAccountName" value={selectedAccount.accountName} onChange={(e) => setSelectedAccount(prevAccount => ({ ...prevAccount, accountName: e.target.value }))} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="editAccountCategory">Account Category:</label>
+                                <select name="editAccountCategory" value={selectedAccount.accountCategory} onChange={(e) => setSelectedAccount(prevAccount => ({ ...prevAccount, accountCategory: e.target.value }))} required>
+                                    <option value="Asset">Asset</option>
+                                    <option value="Liability">Liability</option>
+                                    <option value="Owner's and Stockholder's Equity">Owner's and Stockholder's Equity</option>
+                                    <option value="Revenue">Revenue</option>
+                                    <option value="Expense">Expense</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="editAccountSubcategory">Account Subcategory:</label>
+                                <input type="text" name="editAccountSubcategory" value={selectedAccount.accountSubcategory} onChange={(e) => setSelectedAccount(prevAccount => ({ ...prevAccount, accountSubcategory: e.target.value }))} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="editNormalBalance">Normal Balance:</label>
+                                <select name="editNormalBalance" value={selectedAccount.normalBalance} onChange={(e) => setSelectedAccount(prevAccount => ({ ...prevAccount, normalBalance: e.target.value }))} required>
+                                    <option value="Debit">Debit</option>
+                                    <option value="Credit">Credit</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="editFinancialStatement">Financial Statement:</label>
+                                <select name="editFinancialStatement" value={selectedAccount.financialStatement} onChange={(e) => setSelectedAccount(prevAccount => ({ ...prevAccount, financialStatement: e.target.value }))} required>
+                                    <option value="Balance Statement">Balance Statement</option>
+                                    <option value="Income Statement">Income Statement</option>
+                                    <option value="Retained Earning Statement">Retained Earning Statement</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="editDescription">Description:</label>
+                                <input type="text" name="editDescription" value={selectedAccount.description} onChange={(e) => setSelectedAccount(prevAccount => ({ ...prevAccount, description: e.target.value }))} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="editBalance">Balance:</label>
+                                <input type="number" name="editBalance" value={selectedAccount.balance} onChange={(e) => setSelectedAccount(prevAccount => ({ ...prevAccount, balance: e.target.value }))} required />
+                            </div>
+                            <button type="submit">Save Changes</button>
+                            <button onClick={() => setEditAccountPopup(false)}>Cancel</button>
                         </form>
                         {error && <p className="error-message">{error}</p>}
                     </div>
