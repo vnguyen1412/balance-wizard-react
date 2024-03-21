@@ -39,15 +39,15 @@ export const HomePage = () => {
             </div>
 
             <div className="menu-bar">
-                Menu Bar for Future Functions
-                <Link to="/admin-interface"><button>Admin Interface</button></Link>
                 <Link to="/chart"><button>Charts</button></Link>
+                <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
+                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
+                <Link to="/search-menu"><button className='menuBarButtons'>Search Menu</button></Link>
             </div>
 
             <div className="blue-box">
                 <div className="user-box">
                     <h2 className="user-box-title">Welcome to Balance Wizard</h2>
-                    <p>This is a simple home page. You can add more content or functionality here as needed.</p>
                 </div>
             </div>
         </div>
