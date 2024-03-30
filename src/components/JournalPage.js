@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import BalanceWizardLogo from './BalanceWizardLogo.jpg';
-import ChartOfAccounts from './ChartOfAccounts';
+import Journal from './Journal';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './Styling.css';
 import { useUser } from './userContext';
 
-const ChartOfAccountsPage = () => {
+const JournalPage = () => {
     const { user, handleSignOut } = useUser();
     const [startDate, setStartDate] = useState(new Date());
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
@@ -64,13 +64,14 @@ const ChartOfAccountsPage = () => {
                 <div className="user-box">
                     <div className="title-container">
                         <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="calendar-input" />
-                        <h2 className="user-box-title">Chart of Accounts</h2>
+                        <h2 className="user-box-title">Journals</h2>
                     </div>
-                    <ChartOfAccounts accounts={accounts} sortConfig={sortConfig} requestSort={requestSort} />
+                    {/*<ChartOfAccounts accounts={accounts} sortConfig={sortConfig} requestSort={requestSort} /> */} {/* using this line as a reference and will delete it later */}
+                    <Journal />
                 </div>
             </div>
         </div>
     );
 };
 
-export default ChartOfAccountsPage;
+export default JournalPage;
