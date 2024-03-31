@@ -5,14 +5,20 @@ import { auth } from "../config/firebase";
 const Journal = () => {
     const [addJournalEntry, setAddJournalEntry] = useState(false);
     const [newJournalData, setNewJournalData] = useState({
-        debitAccountTitle: "",
-        debitLedgerRef: null,
-        debitAmount: null,
-        creditAccountTitle: "",
-        creditLedgerRef: null,
-        debitAmount: null,
-        explaination: ""
+        /*debitAccountTitle: [null],
+        debitLedgerRef: [null],
+        debitAmount: [null],
+        creditAccountTitle: [null],
+        creditLedgerRef: [null],
+        creditAmount: [null],
+        explaination: ""*/
     });
+    const [debitAccountTitle, setDebitAccountTitle] = useState([null]);
+    const [debitAmount, setDebitAmount] = useState([null]);
+    const [creditAccountTitle, setCreditAccountTitle] = useState([null]);
+    const [creditAmount, setCreditAmount] = useState([null]);
+    const [explaination, setExplaination] = useState("")
+
     const [accounts, setAccounts] = useState([]);
     const currentDate = new Date();
 
@@ -28,25 +34,18 @@ const Journal = () => {
 
     // Format date and time as a string
     const currentDateTimeString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    //a dictionary used to confirm if account number and account category formated correctly
-    const accountCategoryFormat = {
-        "Asset": 100,
-        "Liability": 200,
-        "Owner's and Stockholder's Equity": 300,
-        "Revenue": 400,
-        "Expenses": 500
-    }
+
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
     const [error, setError] = useState(null)
 
-    //what does this do
+    //set the "account" variable that contains an array of the accounts that exist based off of what is saved in the database 
     useEffect(() => {
         const fetchAccounts = async () => {
             try {
                 const db = getFirestore();
                 const accountsCollection = collection(db, 'accounts');
                 const accountsSnapshot = await getDocs(accountsCollection);
-                const accountsData = accountsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const accountsData = accountsSnapshot.docs.map(doc => doc.data().accountName );
                 setAccounts(accountsData);
             } catch (error) {
                 setError(error.message);
@@ -66,22 +65,10 @@ const Journal = () => {
     const createJournalEntry = async () => {
         try {
             const db = getFirestore();
-            //logic to check that the inputs are valid
-            if(!isValidAccountNumber(newJournalData.accountNumber)) {
-                throw new Error("Invalid Account Number Format")
-            }
 
             //change Account Number & Balance data type to be number
             const finalAccountNumber = Number(newJournalData.accountNumber)
             const finalBalance = parseFloat(parseFloat(newJournalData.balance).toFixed(2)) //double parse because the toFixed() method will turn the float back into a string data type
-            
-            console.log("this is the starting range: ", accountCategoryFormat[newJournalData.accountCategory])
-            
-            //checks to see if the Account Number is with in the Account Category range
-            if((accountCategoryFormat[newJournalData.accountCategory] > finalAccountNumber) || (accountCategoryFormat[newJournalData.accountCategory] + 100) <= finalAccountNumber ) {
-                console.log("this error if-statement was triggered")
-                throw new Error("Invalid! Account Number must match Account Category")
-            }
 
             //make sure that the account number doesn't exist yet
             const accountCheckRef = collection(db, "accounts");
@@ -121,60 +108,68 @@ const Journal = () => {
                 isActive: true
             });
 
-            resetAddAccountForm()
+            resetAddJournalForm()
         } catch (error) {
             setError(error.message)
         }
     };
 
     //future use for adding more debit & credit transactions
-    const addAccountTitle = () => {
+    const addAdditionalEntry = (entryType) => {
+        if(entryType === "Debit Entry") {
+            let newArray = [...debitAccountTitle]
+            newArray.push(null)
+            setDebitAccountTitle(newArray)
 
-    }
+            newArray = [...debitAmount]
+            newArray.push(null)
+            setDebitAmount(newArray)
+        }
+        else {
+            let newArray = [...creditAccountTitle]
+            newArray.push(null)
+            setCreditAccountTitle(newArray)
 
-    const isValidAccountNumber = (num) => {
-        const regex = /^\d+$/;
-        const accountNumberAsString = num.toString()
-        return regex.test(accountNumberAsString)
-    }
+            newArray = [...creditAmount]
+            newArray.push(null)
+            setCreditAmount(newArray)
+        }
+    }      
+
+    const handleNewJournalData = (index) => (e) => {
+        const { name, value} = e.target
         
-
-    const handleNewJournalData = (e) => {
-        const { name, value } = e.target;
-        setNewJournalData
-        (prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
-    const sortedAccounts = React.useMemo(() => {
-        let sortableItems = [...accounts]; // Copy the accounts array to avoid direct mutation
-        if (sortConfig.key !== null) {
-            sortableItems.sort((a, b) => {
-                if (a[sortConfig.key] < b[sortConfig.key]) {
-                    return sortConfig.direction === 'ascending' ? -1 : 1;
-                }
-                if (a[sortConfig.key] > b[sortConfig.key]) {
-                    return sortConfig.direction === 'ascending' ? 1 : -1;
-                }
-                return 0;
-            });
+        if(name === "debitAccountTitle") {
+            const updatedItems = [...debitAccountTitle]
+            updatedItems[index] = value
+            setDebitAccountTitle(updatedItems)
         }
-        return sortableItems;
-    }, [accounts, sortConfig]);
-
-    const requestSort = (key) => {
-        let direction = 'ascending';
-        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-            direction = 'descending';
+        else if(name === "debitAmount") {
+            const updatedItems = [...debitAmount]
+            updatedItems[index] = value
+            setDebitAmount(updatedItems)
         }
-        setSortConfig({ key, direction });
+        else if(name === "creditAccountTitle") {
+            const updatedItems = [...creditAccountTitle]
+            updatedItems[index] = value
+            setCreditAccountTitle(updatedItems)
+        }
+        else if(name === "creditAmount") {
+            const updatedItems = [...creditAmount]
+            updatedItems[index] = value
+            setCreditAmount(updatedItems)
+        }
+        else if(name === "explaination") {
+            setExplaination(value)
+        }
+
+        console.log("here are the debit titles: " + debitAccountTitle)
+        console.log("here are the debit amount: " + debitAmount)
     };
 
     //this resets the Add Account popup when the user closes the popup
-    const resetAddAccountForm = () => {
-        setNewJournalData(prevAccountData => ({
+    const resetAddJournalForm = () => {
+        {/*setNewJournalData(prevAccountData => ({
             ...prevAccountData,
             accountNumber: 100,
             accountName: "",
@@ -184,13 +179,19 @@ const Journal = () => {
             financialStatement: "Balance Statement",
             description: "",
             balance: null
-        }))
+        }))*/}
+
+        setDebitAccountTitle([null])
+        setDebitAmount([null])
+        setCreditAccountTitle([null])
+        setCreditAmount([null])
+        setExplaination("")
 
         setError(null)
 
         setAddJournalEntry(false)
     }
-    
+
     return (
         <div>
             <button onClick={() => setAddJournalEntry(true)}>Add Account</button> 
@@ -202,55 +203,73 @@ const Journal = () => {
             {addJournalEntry && (
                 <div className="popup">
                     <div className="popup-content">
-                        <h3>Add Account</h3>
+                        <h2>Add Journal Entry</h2>
                         <form onSubmit={handleSubmitCreate}>
+                            {/* debit entries */}
+                            <h3>Debit Entry</h3>
+                            <button onClick={() => addAdditionalEntry("Debit Entry")}>Add Debit Entry</button>
+                            <table className="accounts-table">
+                                <thead>
+                                    <tr>
+                                        <th>Account Title</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {debitAccountTitle.map((account, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                {/*<input type="text" name="debitAccountTitle" value={account} onChange={handleNewJournalData(index)} required />*/}
+                                                <select name="debitAccountTitle" value={account} onChange={handleNewJournalData(index)} required>
+                                                    <option value=""></option>
+                                                    {accounts.map((accountName, index) => (
+                                                        <option key={index} value={accountName}>{accountName}</option>
+                                                    ))}
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="debitAmount" value={debitAmount[index]} onChange={handleNewJournalData(index)} required />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            
+                            {/* credit entries */}
+                            <h3>Credit Entry</h3>
+                            <button onClick={() => addAdditionalEntry("Credit Entry")}>Add Credit Entry</button>
+                            <table className="accounts-table">
+                                <thead>
+                                    <tr>
+                                        <th>Account Title</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {creditAccountTitle.map((account, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                {/*<input type="text" name="debitAccountTitle" value={account} onChange={handleNewJournalData(index)} required />*/}
+                                                <select name="creditAccountTitle" value={account} onChange={handleNewJournalData(index)} required>
+                                                    <option value=""></option>
+                                                    {accounts.map((accountName, index) => (
+                                                        <option key={index} value={accountName}>{accountName}</option>
+                                                    ))}
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="creditAmount" value={creditAmount[index]} onChange={handleNewJournalData(index)} required />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                             <div className="form-group">
-                                <label htmlFor="accountNumber">Account Number:</label>
-                                <input type="number" name="accountNumber" value={newJournalData.accountNumber} onChange={handleNewJournalData} required />
+                                <label htmlFor="explaination">Expaination:</label>
+                                <input type="text" name="explaination" value={explaination} onChange={handleNewJournalData(null)} required />
                             </div>
-                            <div className="form-group">
-                                <label htmlFor="accountName">Account Name:</label>
-                                <input type="text" name="accountName" value={newJournalData.accountName} onChange={handleNewJournalData} required />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="accountCategory">Account Category:</label>
-                                <select name="accountCategory" value={newJournalData.accountCategory} onChange={handleNewJournalData} required>
-                                    <option value="Asset">Asset</option>
-                                    <option value="Liability">Liability</option>
-                                    <option value="Owner's and Stockholder's Equity">Owner's and Stockholder's Equity</option>
-                                    <option value="Revenue">Revenue</option>
-                                    <option value="Expense">Expense</option>
-                                </select>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="accountSubcategory">Account Subcategory:</label>
-                                <input type="text" name="accountSubcategory" value={newJournalData.accountSubcategory} onChange={handleNewJournalData} required />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="normalBalance">Normal Balance:</label>
-                                <select name="normalBalance" value={newJournalData.normalBalance} onChange={handleNewJournalData} required>
-                                    <option value="Debit">Debit</option>
-                                    <option value="Credit">Credit</option>
-                                </select>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="financialStatement">Financial Statement:</label>
-                                <select name="financialStatement" value={newJournalData.financialStatement} onChange={handleNewJournalData} required>
-                                    <option value="Balance Statement">Balance Statement</option>
-                                    <option value="Income Statement">Income Statement</option>
-                                    <option value="Retained Earning Statement">Retained Earning Statement</option>
-                                </select>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="description">Description:</label>
-                                <input type="text" name="description" value={newJournalData.description} onChange={handleNewJournalData} required />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="balance">Balance:</label>
-                                <input type="number" name="balance" value={newJournalData.balance} onChange={handleNewJournalData} required />
-                            </div>
-                            <button type="submit">Add Account</button>
-                            <button onClick={resetAddAccountForm}>Cancel</button>
+                            <button type="submit">Add Journal Entry</button>
+                            <button onClick={resetAddJournalForm}>Cancel</button>
                         </form>
                         {error && <p className="error-message">{error}</p>}
                     </div>
