@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getFirestore, setDoc, collection, getDocs, doc, query, where, updateDoc, getDoc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { getStorage, ref } from 'firebase/storage';
 import { auth } from "../config/firebase";
 
 const Journal = () => {
@@ -99,8 +100,8 @@ const Journal = () => {
             console.log("here is the final credit amount array: " + creditAmount)
             console.log("here is the final explaination: " + explaination)
 
-            /*const accountRef = doc(db, "journalEntries");
-            await setDoc(accountRef, {
+            const collectionRef = collection(db, "journalEntries");
+            const docRef = await addDoc(collectionRef, {
                 journalId: "J1",
                 date: currentDateTimeString,
                 debitAccountTitle: debitAccountTitle,
@@ -111,13 +112,20 @@ const Journal = () => {
                 creditAmount: creditAmount,
                 explaination: explaination,
                 status: "pending"
-            });*/
+            });
 
-            //resetAddJournalForm()
+            resetAddJournalForm()
         } catch (error) {
             setError(error.message)
         }
     };
+
+    //upload the file to Firebase Storage
+    const uploadSourceFile = () => {
+        const storage = getStorage()
+
+        const storageRef = ref(storage, sourceFile);
+    }
 
     //adds more debit & credit transactions
     const addAdditionalEntry = (entryType) => {
@@ -200,8 +208,10 @@ const Journal = () => {
 
         setDebitAccountTitle([null])
         setDebitAmount([null])
+        setDebitLedgerRef([null])
         setCreditAccountTitle([null])
         setCreditAmount([null])
+        setCreditLedgerRef([null])
         setExplaination("")
 
         setError(null)
@@ -283,10 +293,10 @@ const Journal = () => {
                                 <label htmlFor="explaination">Expaination:</label>
                                 <input type="text" name="explaination" value={explaination} onChange={handleNewJournalData(null)} required />
                             </div>
-                            <div className="form-group">
+                            {/*<div className="form-group">
                                 <label htmlFor="sourceFile">Source File:</label>
                                 <input type="file" name="sourceFile" value={sourceFile} onChange={handleNewJournalData(null)} required />
-                            </div>
+                                                    </div>*/}
                             <button type="submit">Add Journal Entry</button>
                             <button onClick={resetAddJournalForm}>Cancel</button>
                         </form>
