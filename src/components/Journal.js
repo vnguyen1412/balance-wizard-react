@@ -14,12 +14,17 @@ const Journal = () => {
         explaination: ""*/
     });
     const [debitAccountTitle, setDebitAccountTitle] = useState([null]);
+    const [debitLedgerRef, setDebitLedgerRef] = useState([null]);
     const [debitAmount, setDebitAmount] = useState([null]);
     const [creditAccountTitle, setCreditAccountTitle] = useState([null]);
+    const [creditLedgerRef, setCreditLedgerRef] = useState([null]);
     const [creditAmount, setCreditAmount] = useState([null]);
-    const [explaination, setExplaination] = useState("")
+    const [explaination, setExplaination] = useState("");
+    const [sourceFile, setSourceFile] = useState(null);
 
-    const [accounts, setAccounts] = useState([]);
+    //array that will hold a list of the current accounts in the chart of accounts with their respective account number that will be used to reference the ledger(account)
+    const [accountTitleList, setAccountTitleList] = useState([]);
+    const [ledgerRefList, setLedgerRefList] = useState([]);
     const currentDate = new Date();
 
     // Get date components
@@ -45,8 +50,14 @@ const Journal = () => {
                 const db = getFirestore();
                 const accountsCollection = collection(db, 'accounts');
                 const accountsSnapshot = await getDocs(accountsCollection);
-                const accountsData = accountsSnapshot.docs.map(doc => doc.data().accountName );
-                setAccounts(accountsData);
+                //potential issue that the two arrays will not line up correctly since they may not record the doc data in order
+                const accountsName = accountsSnapshot.docs.map(doc => doc.data().accountName );
+                setAccountTitleList(accountsName);
+                const accountsNumber = accountsSnapshot.docs.map(doc => doc.data().accountNumber)
+                setLedgerRefList(accountsNumber);
+
+                console.log("here's the list of account names: " + accountTitleList);
+                console.log("here's the list of account numbers: " + ledgerRefList);
             } catch (error) {
                 setError(error.message);
             }
@@ -65,56 +76,50 @@ const Journal = () => {
     const createJournalEntry = async () => {
         try {
             const db = getFirestore();
+            setError(null)
 
-            //change Account Number & Balance data type to be number
-            const finalAccountNumber = Number(newJournalData.accountNumber)
-            const finalBalance = parseFloat(parseFloat(newJournalData.balance).toFixed(2)) //double parse because the toFixed() method will turn the float back into a string data type
-
-            //make sure that the account number doesn't exist yet
-            const accountCheckRef = collection(db, "accounts");
-            const q = query(accountCheckRef, where("accountNumber", "==", finalAccountNumber));
-            const querySnapshot = await getDocs(q);
-
-            if(querySnapshot.docs.length > 0) {
-                console.log("this if-statement was triggered")
-                throw new Error("Account number already exist")
+            //check to make sure that debit and credit are equal to each other
+            let totalDebit = 0;
+            let totalCredit = 0;
+            for (const number of debitAmount) {
+                totalDebit += number;
             }
-            
-            //make sure the account name doesn't exist yet
-            const qAccountName = query(accountCheckRef, where("accountName", "==", newJournalData.accountName))
-            const queryAccountNameSnapshot = await getDocs(qAccountName)
-
-            if(queryAccountNameSnapshot.docs.length > 0) {
-                console.log("this second if-statement was triggered")
-                throw new Error("Account name already exist")
+            for (const number of creditAmount) {
+                totalCredit += number;
+            }
+            if(totalCredit !== totalDebit) {
+                throw new Error("debit and credit are not equal to each other!");
             }
 
-            console.log("you have reach the end and the account will be created")
-            //creates a document based on the account number & name and add the account to the database
-            const docName = newJournalData.accountNumber + " " +newJournalData.accountName
-            console.log("name of the document: " + docName)
-            console.log(newJournalData.accountNumber)
-            const accountRef = doc(db, "accounts", docName);
+            console.log("here is the final debit account title array: " + debitAccountTitle)
+            console.log("here is the final debit refs: " + debitLedgerRef)
+            console.log("here is the final debit amount array: " + debitAmount)
+            console.log("here is the final credit account title array: " + creditAccountTitle)
+            console.log("here is the final credit refs: " + creditLedgerRef)
+            console.log("here is the final credit amount array: " + creditAmount)
+            console.log("here is the final explaination: " + explaination)
+
+            /*const accountRef = doc(db, "journalEntries");
             await setDoc(accountRef, {
-                accountNumber: finalAccountNumber,
-                accountName: newJournalData.accountName,
-                accountCategory: newJournalData.accountCategory,
-                accountSubcategory: newJournalData.accountSubcategory,
-                normalBalance: newJournalData.normalBalance,
-                financialStatement: newJournalData.financialStatement,
-                description: newJournalData.description,
-                balance: finalBalance,
+                journalId: "J1",
                 date: currentDateTimeString,
-                isActive: true
-            });
+                debitAccountTitle: debitAccountTitle,
+                debitLedgerRef: debitLedgerRef,
+                debitAmount: debitAmount,
+                creditAccountTitle: creditAccountTitle,
+                creditLedgerRef: creditLedgerRef,
+                creditAmount: creditAmount,
+                explaination: explaination,
+                status: "pending"
+            });*/
 
-            resetAddJournalForm()
+            //resetAddJournalForm()
         } catch (error) {
             setError(error.message)
         }
     };
 
-    //future use for adding more debit & credit transactions
+    //adds more debit & credit transactions
     const addAdditionalEntry = (entryType) => {
         if(entryType === "Debit Entry") {
             let newArray = [...debitAccountTitle]
@@ -143,28 +148,40 @@ const Journal = () => {
             const updatedItems = [...debitAccountTitle]
             updatedItems[index] = value
             setDebitAccountTitle(updatedItems)
+
+            //these saves into another array that saves the account reference in the same index
+            const index1 = accountTitleList.indexOf(value)
+            const updatedRef = [...debitLedgerRef]
+            updatedRef[index] = ledgerRefList[index1]
+            setDebitLedgerRef(updatedRef)
         }
         else if(name === "debitAmount") {
             const updatedItems = [...debitAmount]
-            updatedItems[index] = value
+            updatedItems[index] = parseFloat(parseFloat(value).toFixed(2))
             setDebitAmount(updatedItems)
         }
         else if(name === "creditAccountTitle") {
             const updatedItems = [...creditAccountTitle]
             updatedItems[index] = value
             setCreditAccountTitle(updatedItems)
+
+            //these saves into another array that saves the account reference in the same index
+            const index1 = accountTitleList.indexOf(value)
+            const updatedRef = [...creditLedgerRef]
+            updatedRef[index] = ledgerRefList[index1]
+            setCreditLedgerRef(updatedRef)
         }
         else if(name === "creditAmount") {
             const updatedItems = [...creditAmount]
-            updatedItems[index] = value
+            updatedItems[index] = parseFloat(parseFloat(value).toFixed(2))
             setCreditAmount(updatedItems)
         }
         else if(name === "explaination") {
             setExplaination(value)
         }
-
-        console.log("here are the debit titles: " + debitAccountTitle)
-        console.log("here are the debit amount: " + debitAmount)
+        else if(name === "sourceFile") {
+            setSourceFile(e.target.files[0])
+        }
     };
 
     //this resets the Add Account popup when the user closes the popup
@@ -194,7 +211,7 @@ const Journal = () => {
 
     return (
         <div>
-            <button onClick={() => setAddJournalEntry(true)}>Add Account</button> 
+            <button onClick={() => setAddJournalEntry(true)}>Add Journal Entry</button> 
             <div className='overlay'>
                 <h1 className="smallText">Search Account</h1>
                 <textarea className='searchBar' placeholder='Search..' rows={1} cols={15} />
@@ -219,10 +236,9 @@ const Journal = () => {
                                     {debitAccountTitle.map((account, index) => (
                                         <tr key={index}>
                                             <td>
-                                                {/*<input type="text" name="debitAccountTitle" value={account} onChange={handleNewJournalData(index)} required />*/}
                                                 <select name="debitAccountTitle" value={account} onChange={handleNewJournalData(index)} required>
                                                     <option value=""></option>
-                                                    {accounts.map((accountName, index) => (
+                                                    {accountTitleList.map((accountName, index) => (
                                                         <option key={index} value={accountName}>{accountName}</option>
                                                     ))}
                                                 </select>
@@ -249,10 +265,9 @@ const Journal = () => {
                                     {creditAccountTitle.map((account, index) => (
                                         <tr key={index}>
                                             <td>
-                                                {/*<input type="text" name="debitAccountTitle" value={account} onChange={handleNewJournalData(index)} required />*/}
                                                 <select name="creditAccountTitle" value={account} onChange={handleNewJournalData(index)} required>
                                                     <option value=""></option>
-                                                    {accounts.map((accountName, index) => (
+                                                    {accountTitleList.map((accountName, index) => (
                                                         <option key={index} value={accountName}>{accountName}</option>
                                                     ))}
                                                 </select>
@@ -267,6 +282,10 @@ const Journal = () => {
                             <div className="form-group">
                                 <label htmlFor="explaination">Expaination:</label>
                                 <input type="text" name="explaination" value={explaination} onChange={handleNewJournalData(null)} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="sourceFile">Source File:</label>
+                                <input type="file" name="sourceFile" value={sourceFile} onChange={handleNewJournalData(null)} required />
                             </div>
                             <button type="submit">Add Journal Entry</button>
                             <button onClick={resetAddJournalForm}>Cancel</button>
