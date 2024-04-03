@@ -94,7 +94,7 @@ const Journal = () => {
             }
 
             //calls the method that deals with uploading the document to Firebase Storage
-            uploadSourceFile();
+            //uploadSourceFile();
 
             console.log("here is the final debit account title array: " + debitAccountTitle)
             console.log("here is the final debit refs: " + debitLedgerRef)
@@ -223,7 +223,8 @@ const Journal = () => {
             setExplaination(value)
         }
         else if(name === "sourceFile") {
-            setSourceFile(e.target.files[0])
+            const file = e.target.files[0]
+            setSourceFile(file)
         }
     };
 
@@ -316,10 +317,10 @@ const Journal = () => {
                                 <label htmlFor="explaination">Expaination:</label>
                                 <input type="text" name="explaination" value={explaination} onChange={handleNewJournalData(null)} required />
                             </div>
-                            <div className="form-group">
+                            {/*<div className="form-group">
                                 <label htmlFor="sourceFile">Source File:</label>
                                 <input type="file" name="sourceFile" value={sourceFile} onChange={handleNewJournalData(null)} required />
-                            </div>
+                            </div>*/}
                             <button type="submit">Add Journal Entry</button>
                             <button onClick={resetAddJournalForm}>Cancel</button>
                         </form>
