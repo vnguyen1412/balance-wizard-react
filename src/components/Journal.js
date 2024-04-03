@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getFirestore, setDoc, collection, getDocs, doc, query, where, updateDoc, getDoc, addDoc, serverTimestamp } from 'firebase/firestore';
-import { getStorage, ref } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { auth } from "../config/firebase";
 
 const Journal = () => {
@@ -22,6 +22,7 @@ const Journal = () => {
     const [creditAmount, setCreditAmount] = useState([null]);
     const [explaination, setExplaination] = useState("");
     const [sourceFile, setSourceFile] = useState(null);
+    const [downloadURL, setDownloadURL] = useState(null);
 
     //array that will hold a list of the current accounts in the chart of accounts with their respective account number that will be used to reference the ledger(account)
     const [accountTitleList, setAccountTitleList] = useState([]);
@@ -92,6 +93,9 @@ const Journal = () => {
                 throw new Error("debit and credit are not equal to each other!");
             }
 
+            //calls the method that deals with uploading the document to Firebase Storage
+            uploadSourceFile();
+
             console.log("here is the final debit account title array: " + debitAccountTitle)
             console.log("here is the final debit refs: " + debitLedgerRef)
             console.log("here is the final debit amount array: " + debitAmount)
@@ -111,6 +115,7 @@ const Journal = () => {
                 creditLedgerRef: creditLedgerRef,
                 creditAmount: creditAmount,
                 explaination: explaination,
+                sourceFile: downloadURL,
                 status: "pending"
             });
 
@@ -124,7 +129,37 @@ const Journal = () => {
     const uploadSourceFile = () => {
         const storage = getStorage()
 
-        const storageRef = ref(storage, sourceFile);
+        //this creates  a storage reference for the file
+        const storageRef = ref(storage, sourceFile.name);
+        const uploadTask = uploadBytesResumable(storageRef, sourceFile)
+
+        //listen for state changes, errors, and completion of the upload.
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                //Get the task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                console.log("upload is " + progress + "& done")
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log("Upload is paused");
+                        break;
+                    case 'running':
+                        console.log('Upload is runnning');
+                        break;
+                }
+            },
+            (error) => {
+                setError("Error uploading file: " + error);
+            },
+            () => {
+                //upload is completed successfully, now we can get the download URL
+                const url = getDownloadURL(uploadTask.snapshot.ref)
+                setDownloadURL(url)
+                /*getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    console.log("File abailable at " + downloadURL);
+                })*/
+            }
+            )
     }
 
     //adds more debit & credit transactions
@@ -194,18 +229,6 @@ const Journal = () => {
 
     //this resets the Add Account popup when the user closes the popup
     const resetAddJournalForm = () => {
-        {/*setNewJournalData(prevAccountData => ({
-            ...prevAccountData,
-            accountNumber: 100,
-            accountName: "",
-            accountCategory: "Asset",
-            accountSubcategory: "",
-            normalBalance: "Debit",
-            financialStatement: "Balance Statement",
-            description: "",
-            balance: null
-        }))*/}
-
         setDebitAccountTitle([null])
         setDebitAmount([null])
         setDebitLedgerRef([null])
@@ -293,10 +316,10 @@ const Journal = () => {
                                 <label htmlFor="explaination">Expaination:</label>
                                 <input type="text" name="explaination" value={explaination} onChange={handleNewJournalData(null)} required />
                             </div>
-                            {/*<div className="form-group">
+                            <div className="form-group">
                                 <label htmlFor="sourceFile">Source File:</label>
                                 <input type="file" name="sourceFile" value={sourceFile} onChange={handleNewJournalData(null)} required />
-                                                    </div>*/}
+                            </div>
                             <button type="submit">Add Journal Entry</button>
                             <button onClick={resetAddJournalForm}>Cancel</button>
                         </form>
