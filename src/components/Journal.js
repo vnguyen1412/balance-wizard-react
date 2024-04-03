@@ -224,6 +224,26 @@ const Journal = () => {
         }
     }      
 
+// Function to remove a debit entry
+const removeDebitEntry = (index) => {
+    // Create a new array excluding the entry at the specified index
+    const updatedDebitTitles = debitAccountTitle.filter((_, i) => i !== index);
+    const updatedDebitAmounts = debitAmount.filter((_, i) => i !== index);
+    // Update state with the new arrays
+    setDebitAccountTitle(updatedDebitTitles);
+    setDebitAmount(updatedDebitAmounts);
+};
+
+// Function to remove a credit entry
+const removeCreditEntry = (index) => {
+    // Create a new array excluding the entry at the specified index
+    const updatedCreditTitles = creditAccountTitle.filter((_, i) => i !== index);
+    const updatedCreditAmounts = creditAmount.filter((_, i) => i !== index);
+    // Update state with the new arrays
+    setCreditAccountTitle(updatedCreditTitles);
+    setCreditAmount(updatedCreditAmounts);
+};
+
     const handleNewJournalData = (index) => (e) => {
         const { name, value} = e.target
         
@@ -319,6 +339,7 @@ const Journal = () => {
                                             </td>
                                             <td>
                                                 <input type="number" name="debitAmount" value={debitAmount[index]} onChange={handleNewJournalData(index)} required />
+                                                <button type="button" onClick={() => removeDebitEntry(index)}>Delete</button>
                                             </td>
                                         </tr>
                                     ))}
@@ -348,6 +369,7 @@ const Journal = () => {
                                             </td>
                                             <td>
                                                 <input type="number" name="creditAmount" value={creditAmount[index]} onChange={handleNewJournalData(index)} required />
+                                                <button type="button" onClick={() => removeCreditEntry(index)}>Delete</button>
                                             </td>
                                         </tr>
                                     ))}
