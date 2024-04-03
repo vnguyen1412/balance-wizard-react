@@ -12,7 +12,7 @@ const Journal = () => {
         creditAccountTitle: [null],
         creditLedgerRef: [null],
         creditAmount: [null],
-        explaination: ""*/
+        explanation: ""*/
     });
     const [debitAccountTitle, setDebitAccountTitle] = useState([null]);
     const [debitLedgerRef, setDebitLedgerRef] = useState([null]);
@@ -20,7 +20,7 @@ const Journal = () => {
     const [creditAccountTitle, setCreditAccountTitle] = useState([null]);
     const [creditLedgerRef, setCreditLedgerRef] = useState([null]);
     const [creditAmount, setCreditAmount] = useState([null]);
-    const [explaination, setExplaination] = useState("");
+    const [explanation, setexplanation] = useState("");
     const [sourceFile, setSourceFile] = useState(null);
     const [downloadURL, setDownloadURL] = useState(null);
 
@@ -75,10 +75,48 @@ const Journal = () => {
         createJournalEntry();
     };
 
+    const fetchErrorMessage = async (errorId) => {
+        const db = getFirestore();
+        const errorDocRef = doc(db, 'errors', errorId);
+        const errorDoc = await getDoc(errorDocRef);
+    
+        if (errorDoc.exists()) {
+            return errorDoc.data().errorMessage;
+        } else {
+            console.log('No such document!');
+            return 'An unexpected error occurred';
+        }
+    };
+
     const createJournalEntry = async () => {
         try {
             const db = getFirestore();
             setError(null)
+
+            // Check for Negative Amounts
+            if (debitAmount.some(amount => amount < 0) || creditAmount.some(amount => amount < 0)) {
+                const errorMessage = await fetchErrorMessage('negativeAmount');
+                throw new Error(errorMessage);
+            }
+
+            // Adjusted Check for Duplicate Entries
+            const hasDuplicateDebit = new Set(debitAccountTitle.filter(title => title !== null)).size !== debitAccountTitle.filter(title => title !== null).length;
+            const hasDuplicateCredit = new Set(creditAccountTitle.filter(title => title !== null)).size !== creditAccountTitle.filter(title => title !== null).length;
+            if (hasDuplicateDebit || hasDuplicateCredit) {
+                const errorMessage = await fetchErrorMessage('duplicateEntry');
+                throw new Error(errorMessage);
+            }
+
+            // Check for Total Debits and Credits Mismatch
+            const totalDebit = debitAmount.reduce((acc, curr) => acc + curr, 0);
+            const totalCredit = creditAmount.reduce((acc, curr) => acc + curr, 0);
+            if (totalDebit !== totalCredit) {
+                const errorMessage = await fetchErrorMessage('totalDebitsCreditsMismatch');
+                throw new Error(errorMessage);
+            }
+
+            //  Original Credit/Debit mismatch check
+            /*
 
             //check to make sure that debit and credit are equal to each other
             let totalDebit = 0;
@@ -93,6 +131,8 @@ const Journal = () => {
                 throw new Error("debit and credit are not equal to each other!");
             }
 
+            */
+
             //calls the method that deals with uploading the document to Firebase Storage
             //uploadSourceFile();
 
@@ -102,7 +142,7 @@ const Journal = () => {
             console.log("here is the final credit account title array: " + creditAccountTitle)
             console.log("here is the final credit refs: " + creditLedgerRef)
             console.log("here is the final credit amount array: " + creditAmount)
-            console.log("here is the final explaination: " + explaination)
+            console.log("here is the final explanation: " + explanation)
 
             const collectionRef = collection(db, "journalEntries");
             const docRef = await addDoc(collectionRef, {
@@ -114,7 +154,7 @@ const Journal = () => {
                 creditAccountTitle: creditAccountTitle,
                 creditLedgerRef: creditLedgerRef,
                 creditAmount: creditAmount,
-                explaination: explaination,
+                explanation: explanation,
                 sourceFile: downloadURL,
                 status: "pending"
             });
@@ -219,8 +259,8 @@ const Journal = () => {
             updatedItems[index] = parseFloat(parseFloat(value).toFixed(2))
             setCreditAmount(updatedItems)
         }
-        else if(name === "explaination") {
-            setExplaination(value)
+        else if(name === "explanation") {
+            setexplanation(value)
         }
         else if(name === "sourceFile") {
             const file = e.target.files[0]
@@ -236,7 +276,7 @@ const Journal = () => {
         setCreditAccountTitle([null])
         setCreditAmount([null])
         setCreditLedgerRef([null])
-        setExplaination("")
+        setexplanation("")
 
         setError(null)
 
@@ -314,8 +354,8 @@ const Journal = () => {
                                 </tbody>
                             </table>
                             <div className="form-group">
-                                <label htmlFor="explaination">Expaination:</label>
-                                <input type="text" name="explaination" value={explaination} onChange={handleNewJournalData(null)} required />
+                                <label htmlFor="explanation">Explanation:</label>
+                                <input type="text" name="explanation" value={explanation} onChange={handleNewJournalData(null)} required />
                             </div>
                             {/*<div className="form-group">
                                 <label htmlFor="sourceFile">Source File:</label>
