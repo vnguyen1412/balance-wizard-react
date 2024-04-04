@@ -109,7 +109,7 @@ const JournalPage = () => {
             <div className="blue-box">
                 <div className="user-box">
                     <div className="title-container">
-                        <h2 className="user-box-title">Journals</h2>
+                        <h2 className="user-box-title">Journal Entries</h2>
                         <h3>Date Filter</h3>
                         <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="calendar-input" />
                         <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} className="calendar-input" />
@@ -118,7 +118,7 @@ const JournalPage = () => {
                     </div>
                     {/* Pending Journal Entries Table */}
                     <div className="user-box">
-                        <h3>Pending Journals</h3>
+                        <h3>Pending Journal Entries</h3>
                         <table>
                             <thead>
                                 <tr>
@@ -164,7 +164,7 @@ const JournalPage = () => {
                     </div>
                     {/* Display Approved Journal Entries */}
                     <div className="user-box">
-                        <h3>Approved Journals</h3>
+                        <h3>Approved Journal Entries</h3>
                         <table>
                             <thead>
                                 <tr>
@@ -202,7 +202,7 @@ const JournalPage = () => {
                     </div>
                     {/* Rejected Journal Entries Table */}
                     <div className="user-box">
-                        <h3>Rejected Journals</h3>
+                        <h3>Rejected Journal Entries</h3>
                         <table>
                             <thead>
                                 <tr>
