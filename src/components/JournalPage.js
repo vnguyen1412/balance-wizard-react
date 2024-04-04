@@ -151,7 +151,7 @@ const JournalPage = () => {
                                             <a href={entry.sourceFile} target="_blank" rel="noopener noreferrer">View File</a>
                                         </td>
                                         <td>
-                                            {user.role !== "Manager" && (
+                                            {user.role === "Manager" && (
                                                 <>
                                                     <button onClick={() => approveEntry(entry.id)}>Approve</button>
                                                     <button onClick={() => denyEntry(entry.id)}>Deny</button>
