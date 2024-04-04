@@ -7,6 +7,7 @@ import { CreateAccount } from "./components/createAccount";
 import { HomePage } from './components/HomePage';
 import AdminInterface from './components/adminInterface';
 import ChartOfAccountsPage from './components/ChartOfAccountsPage';
+import JournalPage from './components/JournalPage';
 import { UserProvider } from "./components/userContext";
 import { ForgetPassword } from './components/forgetPassword';
 import Email from './components/SendEmail/SendEmailPage';
@@ -23,6 +24,7 @@ function App () {
                 <Route path="/chart" element={<ChartOfAccountsPage />} />
                 <Route path="/forget-password" element={<ForgetPassword />} />
                 <Route path="/send-email" element={<Email />} />
+                <Route path="/journal" element={<JournalPage />} />
                 {/* Add more routes for other pages as needed */}
             </Routes>
         </Router>
