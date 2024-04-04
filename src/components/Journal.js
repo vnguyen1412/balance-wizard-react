@@ -134,7 +134,7 @@ const Journal = () => {
             */
 
             //calls the method that deals with uploading the document to Firebase Storage
-            //uploadSourceFile();
+            uploadSourceFile();
 
             console.log("here is the final debit account title array: " + debitAccountTitle)
             console.log("here is the final debit refs: " + debitLedgerRef)
@@ -143,6 +143,7 @@ const Journal = () => {
             console.log("here is the final credit refs: " + creditLedgerRef)
             console.log("here is the final credit amount array: " + creditAmount)
             console.log("here is the final explanation: " + explanation)
+            console.log("here is the url for the file: " + downloadURL);
 
             const collectionRef = collection(db, "journalEntries");
             const docRef = await addDoc(collectionRef, {
@@ -165,8 +166,7 @@ const Journal = () => {
         }
     };
 
-    //upload the file to Firebase Storage
-    const uploadSourceFile = () => {
+    const uploadSourceFile = async () => {
         const storage = getStorage()
 
         //this creates  a storage reference for the file
@@ -193,11 +193,12 @@ const Journal = () => {
             },
             () => {
                 //upload is completed successfully, now we can get the download URL
-                const url = getDownloadURL(uploadTask.snapshot.ref)
-                setDownloadURL(url)
-                /*getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    console.log("File abailable at " + downloadURL);
-                })*/
+                //const url = getDownloadURL(uploadTask.snapshot.ref)
+                //setDownloadURL(url)
+                getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                    console.log("File available at " + url);
+                    setDownloadURL(url);
+                })
             }
             )
     }
@@ -228,9 +229,11 @@ const Journal = () => {
 const removeDebitEntry = (index) => {
     // Create a new array excluding the entry at the specified index
     const updatedDebitTitles = debitAccountTitle.filter((_, i) => i !== index);
+    const updatedDebitLedgerRef = debitLedgerRef.filter((_, i) => i !== index);
     const updatedDebitAmounts = debitAmount.filter((_, i) => i !== index);
     // Update state with the new arrays
     setDebitAccountTitle(updatedDebitTitles);
+    setDebitLedgerRef(updatedDebitLedgerRef);
     setDebitAmount(updatedDebitAmounts);
 };
 
@@ -238,9 +241,11 @@ const removeDebitEntry = (index) => {
 const removeCreditEntry = (index) => {
     // Create a new array excluding the entry at the specified index
     const updatedCreditTitles = creditAccountTitle.filter((_, i) => i !== index);
+    const updatedCreditLedgerRef = creditLedgerRef.filter((_, i) => i !== index);
     const updatedCreditAmounts = creditAmount.filter((_, i) => i !== index);
     // Update state with the new arrays
     setCreditAccountTitle(updatedCreditTitles);
+    setCreditLedgerRef(updatedCreditLedgerRef);
     setCreditAmount(updatedCreditAmounts);
 };
 
@@ -379,11 +384,11 @@ const removeCreditEntry = (index) => {
                                 <label htmlFor="explanation">Explanation:</label>
                                 <input type="text" name="explanation" value={explanation} onChange={handleNewJournalData(null)} required />
                             </div>
-                            {/*<div className="form-group">
+                            <div className="form-group">
                                 <label htmlFor="sourceFile">Source File:</label>
-                                <input type="file" name="sourceFile" value={sourceFile} onChange={handleNewJournalData(null)} required />
-                            </div>*/}
-                            <button type="submit">Add Journal Entry</button>
+                                <input type="file" name="sourceFile" onChange={handleNewJournalData(null)} required />
+                            </div>
+                              <button type="submit">Add Journal Entry</button>
                             <button onClick={resetAddJournalForm}>Cancel</button>
                         </form>
                         {error && <p className="error-message">{error}</p>}
