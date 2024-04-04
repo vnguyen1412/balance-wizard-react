@@ -110,6 +110,7 @@ const JournalPage = () => {
                 <div className="user-box">
                     <div className="title-container">
                         <h2 className="user-box-title">Journal Entries</h2>
+                        <Journal />
                         <h3>Date Filter</h3>
                         <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="calendar-input" />
                         <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} className="calendar-input" />
