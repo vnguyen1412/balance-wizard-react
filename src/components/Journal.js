@@ -311,11 +311,6 @@ const removeCreditEntry = (index) => {
     return (
         <div>
             <button onClick={() => setAddJournalEntry(true)}>Add Journal Entry</button> 
-            <div className='overlay'>
-                <h1 className="smallText">Search Account</h1>
-                <textarea className='searchBar' placeholder='Search..' rows={1} cols={15} />
-                <button className='searchPB'>Search</button>
-            </div>
             {addJournalEntry && (
                 <div className="popup">
                     <div className="popup-content">
