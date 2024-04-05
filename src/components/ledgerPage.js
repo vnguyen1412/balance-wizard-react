@@ -65,7 +65,44 @@ return (
                 </div>
                 <ChartOfAccounts accounts={accounts} sortConfig={sortConfig} requestSort={requestSort} />
             </div>
+            <table className = "ledger-table">
+                <thread>
+                    <tr>
+                        <td></td>
+                        <th onClick={() => requestSort('listOfDates')}>Date</th>
+                        <th onClick={() => requestSort('accountNumber')}>Account Number</th>
+                        <th onClick={() => requestSort('journalRefs')}>Reference</th>
+                        <th onClick={() => requestSort('accountType')}>Account Type</th>
+                        <th onClick={() => requestSort('accountCategory')}>Account Category</th>
+                        <th onClick={() => requestSort('accountSubcategory')}>Account Subcategory</th>
+                        <th onClick={() => requestSort('normalBalance')}>Normal Balance</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    { sortedAccounts.map((account,index) =>(
+                        <tr key={index}>
+                            <td>
+                                <input 
+                                    type = "radio"
+                                    name = "selectedAmount"
+                                    onChange={() => setSelectedAmount(account)}
+                                    checked = {selectedAmount === account}
+                                    />
+                            </td>
+                            <td>{account.listOfDates}</td>
+                            <td>{account.accountNumber}</td>
+                            <td>{account.journalRefs}</td>
+                            <td>{account.accountType}</td>
+                            <td>{account.accountCategory}</td>
+                            <td>{account.accountSubcategory}</td>
+                            <td>{account.normalBalance}</td>
+                        </tr>
+                     ))}
+                </tbody>
+            </table>
         </div>
     </div>
+
+
 );
 export default ledgerPage;
