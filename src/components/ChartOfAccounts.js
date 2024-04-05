@@ -234,11 +234,11 @@ const ChartOfAccounts = () => {
         <div>
             <button onClick={() => setAddAccountPopup(true)}>Add Account</button> 
             <button onClick={() => setEditAccountPopup(true)}>Edit Account</button>
-            <div className='overlay'>
-                <h1 className="smallText">Search Account</h1>
-                <textarea className='searchBar' placeholder='Search..' rows={1} cols={15} />
-                <button className='searchPB'>Search</button>
-            </div>
+                <div className='overlay'>
+                    <h1 className="smallText">Search Account</h1>
+                    <textarea className='searchBar' placeholder='Search..' rows={1} cols={15} />
+                    <button className='searchPB'>Search</button>
+                </div>
             <table className="accounts-table">
                 <thead>
                     <tr>

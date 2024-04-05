@@ -88,7 +88,6 @@
     border: 1px solid black;
     height: 70vh;
     overflow-y: auto;
-    text-align: center;
 }
 
 .user-box-title {
@@ -300,7 +299,7 @@
     background-color: none;
     color: black;
     padding: 5px;
-    border-radius: 12px;
+    border-radius: 10px;
     border: none;
     cursor: pointer;
     font-size: 12px;
@@ -327,7 +326,4 @@
     top: 75%;
     left: 75%;
     transform: translate(-50%, -50%);
-}
-.error-message {
-    color: red;
 }
