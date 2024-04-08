@@ -162,7 +162,13 @@ const ChartOfAccounts = () => {
                 description: newAccountData.description,
                 balance: finalBalance,
                 date: currentDateTimeString,
-                isActive: true
+                isActive: true,
+                listOfDates: [],
+                listOfExplainations: [],
+                listOfJournalRefs: [],
+                listOfAmountType: [],
+                listOfAmounts: [],
+                listOfBalances: []
             });
 
             resetAddAccountForm()
