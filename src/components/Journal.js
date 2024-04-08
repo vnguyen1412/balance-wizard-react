@@ -40,7 +40,8 @@ const Journal = () => {
     const seconds = String(currentDate.getSeconds()).padStart(2, '0');
 
     // Format date and time as a string
-    const currentDateTimeString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    //const currentDateTimeString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    const currentDateTimeString = `${year}-${month}-${day}`;
 
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
     const [error, setError] = useState(null)
