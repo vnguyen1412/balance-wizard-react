@@ -88,6 +88,7 @@
     border: 1px solid black;
     height: 70vh;
     overflow-y: auto;
+    text-align: center;
 }
 
 .user-box-title {
