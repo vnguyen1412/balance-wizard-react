@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { signOut } from "firebase/auth";
-import { auth } from "../config/firebase"; // Adjust the import path as necessary
+import { auth } from "../config/firebase";
 
 const UserContext = createContext();
 
@@ -25,4 +25,3 @@ export const UserProvider = ({ children }) => {
         </UserContext.Provider>
     );
 };
-
