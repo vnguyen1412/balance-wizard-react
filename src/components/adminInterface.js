@@ -277,12 +277,12 @@ const AdminInterface = () => {
                                 <tr key={user.id}>
                                     <td>{`${user.firstName} ${user.lastName}`}</td>
                                     <td>{user.email}</td>
-                                    <td>{user.role}</td>                                                
+                                    <td>{user.role}</td>
                                     <td>{user.status}</td>
                                     <td>
                                     {user.role === 'Administrator' && (
                                         <button onClick={() => handleEditInitiate(user)}>Edit</button> //Not finished, can't figure out how to properly reference user.role here because it is being used right before it for the table values
-                                    )}                                                                                         
+                                    )}
                                     </td>
                                 </tr>
                             ))}
