@@ -11,6 +11,7 @@ import JournalPage from './components/JournalPage';
 import { UserProvider } from "./components/userContext";
 import { ForgetPassword } from './components/forgetPassword';
 import Email from './components/SendEmail/SendEmailPage';
+import StatementPage from "./components/statementPage";
 
 function App () {
   return (
@@ -25,6 +26,7 @@ function App () {
                 <Route path="/forget-password" element={<ForgetPassword />} />
                 <Route path="/send-email" element={<Email />} />
                 <Route path="/journal" element={<JournalPage />} />
+                <Route path="/statements" element={<StatementPage />} />
                 {/* Add more routes for other pages as needed */}
             </Routes>
         </Router>

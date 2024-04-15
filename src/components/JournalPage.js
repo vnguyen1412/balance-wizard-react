@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import BalanceWizardLogo from './BalanceWizardLogo.jpg';
 import Journal from './Journal';
+import EditJournalEntry from './EditJournalEntry';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './Styling.css';
@@ -17,7 +18,9 @@ const JournalPage = () => {
     const [approvedJournalEntries, setApprovedJournalEntries] = useState([]);
     const [rejectedJournalEntries, setRejectedJournalEntries] = useState([]);
     const [endDate, setEndDate] = useState(new Date());
-
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [editedEntry, setEditedEntry] = useState(null);
+    const [editId, setEditId] = useState(null);
 
     useEffect(() => {
        fetchJournalEntries();
@@ -68,6 +71,36 @@ const JournalPage = () => {
         fetchJournalEntries();
     };
 
+    const openEditModal = (entry) => {
+        setEditId(entry.id)
+        setEditedEntry(entry);
+        setEditModalVisible(true);
+    };
+    
+    const closeEditModal = () => {
+        setEditedEntry(null);
+        setEditModalVisible(false);
+    };
+    
+    const handleSaveEdit = async (editedEntry) => {
+        try {
+            // Update the entry in Firestore
+            const entryRef = doc(getFirestore(), 'journalEntries', editId);
+            await updateDoc(entryRef, editedEntry);
+    
+            // Close the edit modal after saving
+            closeEditModal();
+            
+            // Fetch the updated journal entries
+            fetchJournalEntries();
+        } catch (error) {
+            console.error('Error saving edited entry:', error);
+        }
+    };
+    
+    
+    
+
     return (
         <div>
             <div className="container">
@@ -104,7 +137,15 @@ const JournalPage = () => {
                 <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
                 <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
                 <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                <Link to="/statements"><button className='menuBarButtons'>Statements</button></Link>
             </div>
+            {editModalVisible && (
+                <EditJournalEntry
+                    entry={editedEntry}
+                    onSave={handleSaveEdit}
+                    onCancel={closeEditModal}
+                />
+            )}
 
             <div className="blue-box">
                 <div className="user-box">
@@ -153,6 +194,7 @@ const JournalPage = () => {
                                         <td>
                                             {user.role === "Manager" && (
                                                 <>
+                                                    <button onClick={() => openEditModal(entry)}>Edit</button>
                                                     <button onClick={() => approveEntry(entry.id)}>Approve</button>
                                                     <button onClick={() => denyEntry(entry.id)}>Deny</button>
                                                 </>
@@ -196,6 +238,13 @@ const JournalPage = () => {
                                         <td>
                                             <a href={entry.sourceFile} target="_blank" rel="noopener noreferrer">View File</a>
                                         </td>
+                                        <td>
+                                            {user.role === "Manager" && (
+                                                <>
+                                                    <button onClick={() => openEditModal(entry)}>Edit</button>
+                                                </>
+                                            )}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -235,6 +284,13 @@ const JournalPage = () => {
                                         <td>{entry.rejectionReason}</td>
                                         <td>
                                             <a href={entry.sourceFile} target="_blank" rel="noopener noreferrer">View File</a>
+                                        </td>
+                                        <td>
+                                            {user.role === "Manager" && (
+                                                <>
+                                                    <button onClick={() => openEditModal(entry)}>Edit</button>
+                                                </>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}
