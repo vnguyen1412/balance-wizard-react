@@ -273,15 +273,15 @@ const AdminInterface = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentUsers.map(user => (
-                                <tr key={user.id}>
-                                    <td>{`${user.firstName} ${user.lastName}`}</td>
-                                    <td>{user.email}</td>
-                                    <td>{user.role}</td>
-                                    <td>{user.status}</td>
+                            {currentUsers.map(users => (
+                                <tr key={users.id}>
+                                    <td>{`${users.firstName} ${users.lastName}`}</td>
+                                    <td>{users.email}</td>
+                                    <td>{users.role}</td>
+                                    <td>{users.status}</td>
                                     <td>
                                     {user.role === 'Administrator' && (
-                                        <button onClick={() => handleEditInitiate(user)}>Edit</button> //Not finished, can't figure out how to properly reference user.role here because it is being used right before it for the table values
+                                        <button onClick={() => handleEditInitiate(users)}>Edit</button>
                                     )}
                                     </td>
                                 </tr>
@@ -302,15 +302,15 @@ const AdminInterface = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {pendingUsers.map(user => (
-                                <tr key={user.id}>
-                                    <td>{`${user.firstName} ${user.lastName}`}</td>
-                                    <td>{user.email}</td>
-                                    <td>{user.role}</td>
-                                    <td>{user.status}</td>
+                            {pendingUsers.map(users => (
+                                <tr key={users.id}>
+                                    <td>{`${users.firstName} ${users.lastName}`}</td>
+                                    <td>{users.email}</td>
+                                    <td>{users.role}</td>
+                                    <td>{users.status}</td>
                                     <td>
-                                        <button onClick={() => approveUser(user.id)}>Approve</button>
-                                        <button onClick={() => rejectUser(user.id)}>Reject</button>
+                                        <button onClick={() => approveUser(users.id)}>Approve</button>
+                                        <button onClick={() => rejectUser(users.id)}>Reject</button>
                                     </td>
                                 </tr>
                             ))}
