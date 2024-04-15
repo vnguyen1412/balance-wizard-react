@@ -63,7 +63,8 @@ export const Auth = () => {
                         firstName: userSnap.data().firstName,
                         lastName: userSnap.data().lastName,
                         username: userSnap.data().username,
-                        profilePic: DefaultProfilePic
+                        profilePic: DefaultProfilePic,
+                        role: userSnap.data().role
                     });
                     console.log("Username set to: ", userSnap.data().username);
                 } else {
@@ -71,7 +72,7 @@ export const Auth = () => {
                 }
             } else {
                 // User is signed out
-                setUser({ username: '', profilePic: '' });
+                setUser({ username: '', profilePic: '', role: ''});
             }
         });
     
