@@ -237,6 +237,7 @@ const AdminInterface = () => {
                 <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
                 <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
                 <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                <Link to="/statements"><button className='menuBarButtons'>Statements</button></Link>
             </div>
             
             <div className="blue-box">
