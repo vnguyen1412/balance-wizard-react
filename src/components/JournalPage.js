@@ -8,7 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './Styling.css';
 import { useUser } from './userContext';
 // Firestore imports
-import { collection, getDocs, getFirestore, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, getDoc, getFirestore, doc, updateDoc } from 'firebase/firestore';
 import { database } from '../config/firebase'; // Ensure you have a firebase config file
 
 const JournalPage = () => {
@@ -56,8 +56,125 @@ const JournalPage = () => {
         await updateDoc(journalRef, {
             status: "approved"
         });
+
+        //making changes to the respective ledgers/accounts that the journal entry affects
+        updateLedger(id);
+
         fetchJournalEntries();
     };
+
+    const updateLedger = async (id) => {
+        //retrieves all of the data from the document
+        const journalRef = doc(getFirestore(), "journalEntries", id);
+        const docSnapshot = await getDoc(journalRef);
+        const docData = docSnapshot.data();
+
+        //loops through the debit transactions
+        for(let i = 0; i < docData.debitAccountTitle.length; i++) {
+            //creates a reference the the account that is affected by the transaction
+            //then retrieves the data of the account to be updated
+            let accountId = docData.debitLedgerRef[i] + " " + docData.debitAccountTitle[i];
+            let accountRef = doc(getFirestore(), "accounts", accountId);
+            let accountSnapshot = await getDoc(accountRef);
+            let accountData = accountSnapshot.data();
+
+            //update the listOfAmountType
+            let currentListOfAmountType = accountData.listOfAmountType;
+            currentListOfAmountType.push("debit");
+
+            //update the listOfAmounts
+            let currentListOfAmounts = accountData.listOfAmounts;
+            currentListOfAmounts.push(docData.debitAmount[i]);
+
+            //update the listOfBalances
+            let currentListOfBalances = accountData.listOfBalances;
+            let newBalance = 0;
+            if(accountData.normalBalance === "Debit") {
+                newBalance = accountData.balance + docData.debitAmount[i];
+            }
+            else {
+                newBalance = accountData.balance - docData.debitAmount[i];
+            }
+            currentListOfBalances.push(newBalance);
+
+            //update the listOfDates
+            let currentListOfDates = accountData.listOfDates;
+            currentListOfDates.push(docData.date);
+
+            //update the listOfJournalRefs
+            let currentListOfJournalRefs = accountData.listOfJournalRefs;
+            currentListOfJournalRefs.push(docData.journalId);
+
+            console.log("Here is the new listOfAmountType for " + accountData.accountName + ": " + currentListOfAmountType);
+            console.log("Here is the new listOfAmounts for " + accountData.accountName + ": " + currentListOfAmounts);
+            console.log("Here is the new listOfBalances for " + accountData.accountName + ": " + currentListOfBalances);
+            console.log("Here is the new listOfDates for " + accountData.accountName + ": " + currentListOfDates);
+            console.log("Here is the new listOfJournalRefs for " + accountData.accountName + ": " + currentListOfJournalRefs);
+            console.log("Here is the new balance for " + accountData.accountName + ": " + newBalance);
+
+            await updateDoc(accountRef, {
+                listOfAmountType: currentListOfAmountType,
+                listOfAmounts: currentListOfAmounts,
+                listOfBalances: currentListOfBalances,
+                listOfDates: currentListOfDates,
+                listOfJournalRefs: currentListOfJournalRefs,
+                balance: newBalance
+            });
+        }
+
+        //loops through the credit transactions
+        for(let i = 0; i < docData.creditAccountTitle.length; i++) {
+            //creates a reference the the account that is affected by the transaction
+            //then retrieves the data of the account to be updated
+            let accountId = docData.creditLedgerRef[i] + " " + docData.creditAccountTitle[i];
+            let accountRef = doc(getFirestore(), "accounts", accountId);
+            let accountSnapshot = await getDoc(accountRef);
+            let accountData = accountSnapshot.data();
+
+            //update the listOfAmountType
+            let currentListOfAmountType = accountData.listOfAmountType;
+            currentListOfAmountType.push("credit");
+
+            //update the listOfAmounts
+            let currentListOfAmounts = accountData.listOfAmounts;
+            currentListOfAmounts.push(docData.creditAmount[i]);
+
+            //update the listOfBalances
+            let currentListOfBalances = accountData.listOfBalances;
+            let newBalance = 0;
+            if(accountData.normalBalance === "Credit") {
+                newBalance = accountData.balance + docData.creditAmount[i];
+            }
+            else {
+                newBalance = accountData.balance - docData.creditAmount[i];
+            }
+            currentListOfBalances.push(newBalance);
+
+            //update the listOfDates
+            let currentListOfDates = accountData.listOfDates;
+            currentListOfDates.push(docData.date);
+
+            //update the listOfJournalRefs
+            let currentListOfJournalRefs = accountData.listOfJournalRefs;
+            currentListOfJournalRefs.push(docData.journalId);
+
+            console.log("Here is the new listOfAmountType for " + accountData.accountName + ": " + currentListOfAmountType);
+            console.log("Here is the new listOfAmounts for " + accountData.accountName + ": " + currentListOfAmounts);
+            console.log("Here is the new listOfBalances for " + accountData.accountName + ": " + currentListOfBalances);
+            console.log("Here is the new listOfDates for " + accountData.accountName + ": " + currentListOfDates);
+            console.log("Here is the new listOfJournalRefs for " + accountData.accountName + ": " + currentListOfJournalRefs);
+            console.log("Here is the new balance for " + accountData.accountName + ": " + newBalance);
+
+            await updateDoc(accountRef, {
+                listOfAmountType: currentListOfAmountType,
+                listOfAmounts: currentListOfAmounts,
+                listOfBalances: currentListOfBalances,
+                listOfDates: currentListOfDates,
+                listOfJournalRefs: currentListOfJournalRefs,
+                balance: newBalance
+            });
+        }
+    }
     
     const denyEntry = async (id) => {
         // Similar to approveEntry, but sets the status to 'denied'
