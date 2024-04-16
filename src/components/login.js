@@ -63,7 +63,8 @@ export const Auth = () => {
                         firstName: userSnap.data().firstName,
                         lastName: userSnap.data().lastName,
                         username: userSnap.data().username,
-                        profilePic: DefaultProfilePic
+                        profilePic: DefaultProfilePic,
+                        role: userSnap.data().role
                     });
                     console.log("Username set to: ", userSnap.data().username);
                 } else {
@@ -71,7 +72,7 @@ export const Auth = () => {
                 }
             } else {
                 // User is signed out
-                setUser({ username: '', profilePic: '' });
+                setUser({ username: '', profilePic: '', role: ''});
             }
         });
     
@@ -160,10 +161,27 @@ export const Auth = () => {
             </div>
 
             <div className="menu-bar">
-                <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
-                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
-                <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
-                <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                {user.username ? (
+                    <>
+                        {user.role === 'Accountant' && (
+                            <>
+                                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
+                                <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
+                                <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                            </>
+                        )}
+                        {(user.role === 'Manager' || user.role === 'Administrator') && (
+                            <>
+                                <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
+                                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
+                                <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
+                                <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                            </>
+                        )}
+                    </>
+                ) : (
+                    <div>Please login to navigate the application</div>
+                )}
             </div>
 
             <div className="blue-box">

@@ -250,11 +250,27 @@ const JournalPage = () => {
             </div>
 
             <div className="menu-bar">
-                <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
-                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
-                <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
-                <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
-                <Link to="/statements"><button className='menuBarButtons'>Statements</button></Link>
+                {user.username ? (
+                    <>
+                        {user.role === 'Accountant' && (
+                            <>
+                                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
+                                <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
+                                <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                            </>
+                        )}
+                        {(user.role === 'Manager' || user.role === 'Administrator') && (
+                            <>
+                                <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
+                                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
+                                <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
+                                <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                            </>
+                        )}
+                    </>
+                ) : (
+                    <div>Please login to navigate the application</div>
+                )}
             </div>
             {editModalVisible && (
                 <EditJournalEntry
