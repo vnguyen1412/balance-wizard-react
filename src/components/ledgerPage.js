@@ -6,7 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './Styling.css';
 import { useUser } from './userContext';
 import ChartOfAccounts from './ChartOfAccounts';
-import sortedAccounts from '.ChartOfAccounts';
+import sortedAccounts from './ChartOfAccounts';
 
 const LedgerPage = () => {
     const { user, handleSignOut } = useUser();
