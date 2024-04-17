@@ -233,16 +233,39 @@ const AdminInterface = () => {
             </div>
 
             <div className="menu-bar">
-                <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
-                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
-                <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
-                <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                {user.username ? (
+                    <>
+                        {user.role === 'Accountant' && (
+                            <>
+                                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
+                                <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
+                                <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                                <Link to="/ledger"><button className='menuBarButtons'>Ledgers</button></Link>
+                                <Link to="/statements"><button className='menuBarButtons'>Statements</button></Link>
+                            </>
+                        )}
+                        {(user.role === 'Manager' || user.role === 'Administrator') && (
+                            <>
+                                <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
+                                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
+                                <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
+                                <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                                <Link to="/ledger-page"><button className='menuBarButtons'>Ledgers</button></Link>
+                                <Link to="/statements"><button className='menuBarButtons'>Statements</button></Link>
+                            </>
+                        )}
+                    </>
+                ) : (
+                    <div>Please login to navigate the application</div>
+                )}
             </div>
             
             <div className="blue-box">
                 <div className="user-box">
                     <h3>Current Users</h3>
-                    <button onClick={() => setCreatingUser(true)}>Create New User</button> {/* Button to open the create user popup */}
+                    {user.role === 'Administrator' && (
+                        <button onClick={() => setCreatingUser(true)}>Create New User</button>
+                    )}
                     <table>
                         <thead>
                             <tr>
@@ -254,14 +277,16 @@ const AdminInterface = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentUsers.map(user => (
-                                <tr key={user.id}>
-                                    <td>{`${user.firstName} ${user.lastName}`}</td>
-                                    <td>{user.email}</td>
-                                    <td>{user.role}</td>
-                                    <td>{user.status}</td>
+                            {currentUsers.map(users => (
+                                <tr key={users.id}>
+                                    <td>{`${users.firstName} ${users.lastName}`}</td>
+                                    <td>{users.email}</td>
+                                    <td>{users.role}</td>
+                                    <td>{users.status}</td>
                                     <td>
-                                        <button onClick={() => handleEditInitiate(user)}>Edit</button>
+                                    {user.role === 'Administrator' && (
+                                        <button onClick={() => handleEditInitiate(users)}>Edit</button>
+                                    )}
                                     </td>
                                 </tr>
                             ))}
@@ -281,15 +306,15 @@ const AdminInterface = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {pendingUsers.map(user => (
-                                <tr key={user.id}>
-                                    <td>{`${user.firstName} ${user.lastName}`}</td>
-                                    <td>{user.email}</td>
-                                    <td>{user.role}</td>
-                                    <td>{user.status}</td>
+                            {pendingUsers.map(users => (
+                                <tr key={users.id}>
+                                    <td>{`${users.firstName} ${users.lastName}`}</td>
+                                    <td>{users.email}</td>
+                                    <td>{users.role}</td>
+                                    <td>{users.status}</td>
                                     <td>
-                                        <button onClick={() => approveUser(user.id)}>Approve</button>
-                                        <button onClick={() => rejectUser(user.id)}>Reject</button>
+                                        <button onClick={() => approveUser(users.id)}>Approve</button>
+                                        <button onClick={() => rejectUser(users.id)}>Reject</button>
                                     </td>
                                 </tr>
                             ))}

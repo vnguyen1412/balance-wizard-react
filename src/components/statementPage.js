@@ -1,25 +1,30 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import BalanceWizardLogo from './BalanceWizardLogo.jpg';
-import ChartOfAccounts from './ChartOfAccounts';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './Styling.css';
 import { useUser } from './userContext';
+import BalanceWizardLogo from './BalanceWizardLogo.jpg';
 
-const ChartOfAccountsPage = () => {
+const StatementPage = () => {
     const { user, handleSignOut } = useUser();
-    const [startDate, setStartDate] = useState(new Date());
-    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
-    
+    const [startDate, setStartDate] = useState(new Date('January 1, 2000'));
+    const [endDate, setEndDate] = useState(new Date());
 
-    // Define accounts data (mock or from API)
-    const accounts = [
-        // Your account data here
-    ];
+    const handleTrialBalance = () => {
+        // Placeholder for trial balance logic
+    };
 
-    const requestSort = (key) => {
-        // Sort logic
+    const handleIncomeStatement = () => {
+        // Placeholder for income statement logic
+    };
+
+    const handleBalanceSheet = () => {
+        // Placeholder for balance sheet logic
+    };
+
+    const handleRetainedEarnings = () => {
+        // Placeholder for retained earnings logic
     };
 
     return (
@@ -29,9 +34,9 @@ const ChartOfAccountsPage = () => {
                     <Link to="/"><img src={BalanceWizardLogo} alt="logo" className="logo" /></Link>
                     <div>
                         <h1 className="title">Balance Wizard</h1>
-                        {user.username && user.firstName && user.lastName && (
-                            <div className="user-fullname">{`${user.firstName} ${user.lastName}`}</div>)
-                        }
+                        {user.username && (
+                            <div className="user-fullname">{`${user.firstName} ${user.lastName}`}</div>
+                        )}
                     </div>
                 </div>
                 <div className="auth-section">
@@ -83,15 +88,21 @@ const ChartOfAccountsPage = () => {
 
             <div className="blue-box">
                 <div className="user-box">
-                    <div className="title-container">
-                        <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="calendar-input" />
-                        <h2 className="user-box-title">Chart of Accounts</h2>
+                    <h2 className="user-box-title">Financial Statements</h2>
+                    <h3>Date Filter</h3>
+                    <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="calendar-input" />
+                    <span style={{ margin: '0 10px' }}>to</span>
+                    <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} className="calendar-input" />
+                    <div>
+                        <button onClick={handleTrialBalance}>Trial Balance</button>
+                        <button onClick={handleIncomeStatement}>Income Statement</button>
+                        <button onClick={handleBalanceSheet}>Balance Sheet</button>
+                        <button onClick={handleRetainedEarnings}>Retained Earnings</button>
                     </div>
-                    <ChartOfAccounts accounts={accounts} sortConfig={sortConfig} requestSort={requestSort} />
                 </div>
             </div>
         </div>
     );
 };
 
-export default ChartOfAccountsPage;
+export default StatementPage;

@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import BalanceWizardLogo from './BalanceWizardLogo.jpg';
 import Journal from './Journal';
+import EditJournalEntry from './EditJournalEntry';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './Styling.css';
 import { useUser } from './userContext';
 // Firestore imports
-import { collection, getDocs, getFirestore, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, getDoc, getFirestore, doc, updateDoc } from 'firebase/firestore';
 import { database } from '../config/firebase'; // Ensure you have a firebase config file
 
 const JournalPage = () => {
@@ -17,7 +18,9 @@ const JournalPage = () => {
     const [approvedJournalEntries, setApprovedJournalEntries] = useState([]);
     const [rejectedJournalEntries, setRejectedJournalEntries] = useState([]);
     const [endDate, setEndDate] = useState(new Date());
-
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [editedEntry, setEditedEntry] = useState(null);
+    const [editId, setEditId] = useState(null);
 
     useEffect(() => {
        fetchJournalEntries();
@@ -53,8 +56,125 @@ const JournalPage = () => {
         await updateDoc(journalRef, {
             status: "approved"
         });
+
+        //making changes to the respective ledgers/accounts that the journal entry affects
+        updateLedger(id);
+
         fetchJournalEntries();
     };
+
+    const updateLedger = async (id) => {
+        //retrieves all of the data from the document
+        const journalRef = doc(getFirestore(), "journalEntries", id);
+        const docSnapshot = await getDoc(journalRef);
+        const docData = docSnapshot.data();
+
+        //loops through the debit transactions
+        for(let i = 0; i < docData.debitAccountTitle.length; i++) {
+            //creates a reference the the account that is affected by the transaction
+            //then retrieves the data of the account to be updated
+            let accountId = docData.debitLedgerRef[i] + " " + docData.debitAccountTitle[i];
+            let accountRef = doc(getFirestore(), "accounts", accountId);
+            let accountSnapshot = await getDoc(accountRef);
+            let accountData = accountSnapshot.data();
+
+            //update the listOfAmountType
+            let currentListOfAmountType = accountData.listOfAmountType;
+            currentListOfAmountType.push("debit");
+
+            //update the listOfAmounts
+            let currentListOfAmounts = accountData.listOfAmounts;
+            currentListOfAmounts.push(docData.debitAmount[i]);
+
+            //update the listOfBalances
+            let currentListOfBalances = accountData.listOfBalances;
+            let newBalance = 0;
+            if(accountData.normalBalance === "Debit") {
+                newBalance = accountData.balance + docData.debitAmount[i];
+            }
+            else {
+                newBalance = accountData.balance - docData.debitAmount[i];
+            }
+            currentListOfBalances.push(newBalance);
+
+            //update the listOfDates
+            let currentListOfDates = accountData.listOfDates;
+            currentListOfDates.push(docData.date);
+
+            //update the listOfJournalRefs
+            let currentListOfJournalRefs = accountData.listOfJournalRefs;
+            currentListOfJournalRefs.push(docData.journalId);
+
+            console.log("Here is the new listOfAmountType for " + accountData.accountName + ": " + currentListOfAmountType);
+            console.log("Here is the new listOfAmounts for " + accountData.accountName + ": " + currentListOfAmounts);
+            console.log("Here is the new listOfBalances for " + accountData.accountName + ": " + currentListOfBalances);
+            console.log("Here is the new listOfDates for " + accountData.accountName + ": " + currentListOfDates);
+            console.log("Here is the new listOfJournalRefs for " + accountData.accountName + ": " + currentListOfJournalRefs);
+            console.log("Here is the new balance for " + accountData.accountName + ": " + newBalance);
+
+            await updateDoc(accountRef, {
+                listOfAmountType: currentListOfAmountType,
+                listOfAmounts: currentListOfAmounts,
+                listOfBalances: currentListOfBalances,
+                listOfDates: currentListOfDates,
+                listOfJournalRefs: currentListOfJournalRefs,
+                balance: newBalance
+            });
+        }
+
+        //loops through the credit transactions
+        for(let i = 0; i < docData.creditAccountTitle.length; i++) {
+            //creates a reference the the account that is affected by the transaction
+            //then retrieves the data of the account to be updated
+            let accountId = docData.creditLedgerRef[i] + " " + docData.creditAccountTitle[i];
+            let accountRef = doc(getFirestore(), "accounts", accountId);
+            let accountSnapshot = await getDoc(accountRef);
+            let accountData = accountSnapshot.data();
+
+            //update the listOfAmountType
+            let currentListOfAmountType = accountData.listOfAmountType;
+            currentListOfAmountType.push("credit");
+
+            //update the listOfAmounts
+            let currentListOfAmounts = accountData.listOfAmounts;
+            currentListOfAmounts.push(docData.creditAmount[i]);
+
+            //update the listOfBalances
+            let currentListOfBalances = accountData.listOfBalances;
+            let newBalance = 0;
+            if(accountData.normalBalance === "Credit") {
+                newBalance = accountData.balance + docData.creditAmount[i];
+            }
+            else {
+                newBalance = accountData.balance - docData.creditAmount[i];
+            }
+            currentListOfBalances.push(newBalance);
+
+            //update the listOfDates
+            let currentListOfDates = accountData.listOfDates;
+            currentListOfDates.push(docData.date);
+
+            //update the listOfJournalRefs
+            let currentListOfJournalRefs = accountData.listOfJournalRefs;
+            currentListOfJournalRefs.push(docData.journalId);
+
+            console.log("Here is the new listOfAmountType for " + accountData.accountName + ": " + currentListOfAmountType);
+            console.log("Here is the new listOfAmounts for " + accountData.accountName + ": " + currentListOfAmounts);
+            console.log("Here is the new listOfBalances for " + accountData.accountName + ": " + currentListOfBalances);
+            console.log("Here is the new listOfDates for " + accountData.accountName + ": " + currentListOfDates);
+            console.log("Here is the new listOfJournalRefs for " + accountData.accountName + ": " + currentListOfJournalRefs);
+            console.log("Here is the new balance for " + accountData.accountName + ": " + newBalance);
+
+            await updateDoc(accountRef, {
+                listOfAmountType: currentListOfAmountType,
+                listOfAmounts: currentListOfAmounts,
+                listOfBalances: currentListOfBalances,
+                listOfDates: currentListOfDates,
+                listOfJournalRefs: currentListOfJournalRefs,
+                balance: newBalance
+            });
+        }
+    }
     
     const denyEntry = async (id) => {
         // Similar to approveEntry, but sets the status to 'denied'
@@ -67,6 +187,36 @@ const JournalPage = () => {
         });
         fetchJournalEntries();
     };
+
+    const openEditModal = (entry) => {
+        setEditId(entry.id)
+        setEditedEntry(entry);
+        setEditModalVisible(true);
+    };
+    
+    const closeEditModal = () => {
+        setEditedEntry(null);
+        setEditModalVisible(false);
+    };
+    
+    const handleSaveEdit = async (editedEntry) => {
+        try {
+            // Update the entry in Firestore
+            const entryRef = doc(getFirestore(), 'journalEntries', editId);
+            await updateDoc(entryRef, editedEntry);
+    
+            // Close the edit modal after saving
+            closeEditModal();
+            
+            // Fetch the updated journal entries
+            fetchJournalEntries();
+        } catch (error) {
+            console.error('Error saving edited entry:', error);
+        }
+    };
+    
+    
+    
 
     return (
         <div>
@@ -100,11 +250,40 @@ const JournalPage = () => {
             </div>
 
             <div className="menu-bar">
-                <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
-                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
-                <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
-                <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                {user.username ? (
+                    <>
+                        {user.role === 'Accountant' && (
+                            <>
+                                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
+                                <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
+                                <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                                <Link to="/ledger"><button className='menuBarButtons'>Ledgers</button></Link>
+                                <Link to="/statements"><button className='menuBarButtons'>Statements</button></Link>
+                            </>
+                        )}
+                        {(user.role === 'Manager' || user.role === 'Administrator') && (
+                            <>
+                                <Link to="/admin-interface"><button className='menuBarButtons'>Admin Interface</button></Link>
+                                <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
+                                <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
+                                <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                                <Link to="/ledger-page"><button className='menuBarButtons'>Ledgers</button></Link>
+                                <Link to="/statements"><button className='menuBarButtons'>Statements</button></Link>
+                            </>
+                        )}
+                    </>
+                ) : (
+                    <div>Please login to navigate the application</div>
+                )}
             </div>
+            
+            {editModalVisible && (
+                <EditJournalEntry
+                    entry={editedEntry}
+                    onSave={handleSaveEdit}
+                    onCancel={closeEditModal}
+                />
+            )}
 
             <div className="blue-box">
                 <div className="user-box">
@@ -158,6 +337,7 @@ const JournalPage = () => {
                                         <td>
                                             {user.role === "Manager" && (
                                                 <>
+                                                    <button onClick={() => openEditModal(entry)}>Edit</button>
                                                     <button onClick={() => approveEntry(entry.id)}>Approve</button>
                                                     <button onClick={() => denyEntry(entry.id)}>Deny</button>
                                                 </>
@@ -201,6 +381,13 @@ const JournalPage = () => {
                                         <td>
                                             <a href={entry.sourceFile} target="_blank" rel="noopener noreferrer">View File</a>
                                         </td>
+                                        <td>
+                                            {user.role === "Manager" && (
+                                                <>
+                                                    <button onClick={() => openEditModal(entry)}>Edit</button>
+                                                </>
+                                            )}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -240,6 +427,13 @@ const JournalPage = () => {
                                         <td>{entry.rejectionReason}</td>
                                         <td>
                                             <a href={entry.sourceFile} target="_blank" rel="noopener noreferrer">View File</a>
+                                        </td>
+                                        <td>
+                                            {user.role === "Manager" && (
+                                                <>
+                                                    <button onClick={() => openEditModal(entry)}>Edit</button>
+                                                </>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}
