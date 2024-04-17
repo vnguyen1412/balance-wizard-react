@@ -13,7 +13,6 @@ import { UserProvider } from "./components/userContext";
 import { ForgetPassword } from './components/forgetPassword';
 import Email from './components/SendEmail/SendEmailPage';
 import StatementPage from "./components/statementPage";
-import ledgerPage from "./components/ledgerPage";
 
 function App () {
   return (
@@ -28,7 +27,7 @@ function App () {
                 <Route path="/forget-password" element={<ForgetPassword />} />
                 <Route path="/send-email" element={<Email />} />
                 <Route path="/journal" element={<JournalPage />} />
-                <Route path="/ledger" element={<LedgerPage />} />
+                <Route path="/ledger-page" element={<LedgerPage />} />
                 <Route path="/statements" element={<StatementPage />} />
                 {/* Add more routes for other pages as needed */}
             </Routes>
