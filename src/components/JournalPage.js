@@ -22,9 +22,16 @@ const JournalPage = () => {
     const [editedEntry, setEditedEntry] = useState(null);
     const [editId, setEditId] = useState(null);
 
+    const [searchBar, setSearchBar] = useState('');
+    const handleSearchSubmit = (event) => {
+        event.preventDefault(); 
+        const searchTerm = event.target.searchBarTxt.value;
+        setSearchBar(searchTerm);
+    };
+
     useEffect(() => {
        fetchJournalEntries();
-    }, []);
+    }, [searchBar]);
     // Function to fetch journal entries
     const fetchJournalEntries = async () => {
         try {
@@ -41,7 +48,14 @@ const JournalPage = () => {
             const current = filteredEntries.filter(entry => entry.status === 'approved');
             const pending = filteredEntries.filter(entry => entry.status === 'pending');
             const rejected = filteredEntries.filter(entry => entry.status === 'rejected');
-            setApprovedJournalEntries(current);
+
+            if (searchBar != ""){
+                const filteredData = current.filter(entry => entry.date === searchBar);
+                setApprovedJournalEntries(filteredData);
+            } else {
+                setApprovedJournalEntries(current);
+            }
+
             setPendingJournalEntries(pending);
             setRejectedJournalEntries(rejected);
         } catch (error) {
@@ -287,11 +301,7 @@ const JournalPage = () => {
 
             <div className="blue-box">
                 <div className="user-box">
-                    <div className='overlay'>
-                        <h1 className="smallText">Search Account</h1>
-                        <textarea className='searchBar' placeholder='Search..' rows={1} cols={15} />
-                        <button className='searchPB'>Search</button>
-                    </div>
+                    
                     <div className="title-container">
                         <h2 className="user-box-title">Journal Entries</h2>
                         <Journal />
@@ -300,6 +310,57 @@ const JournalPage = () => {
                         <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} className="calendar-input" />
                         <body></body>
                         <button onClick={() => fetchJournalEntries()}>Apply Filter</button>
+                        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', margin: '10px'}}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <input name="searchBarTxt" type="text" placeholder='Search Journals..' style={{ display: 'block', marginBottom: '5px', width: '170px', textAlign: 'center'}} />
+                                <button type="submit" style={{ display: 'block' }}>Search</button>
+                            </div>
+                        </form>
+                    </div>
+                    {/* Display Approved Journal Entries */}
+                    <div className="user-box">
+                        <h3>Approved Journal Entries</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Journal ID</th>
+                                    <th>Date</th>
+                                    <th>Debit Account Title</th>
+                                    <th>Debit Ledger Ref</th>
+                                    <th>Debit Amount</th>
+                                    <th>Credit Account Title</th>
+                                    <th>Credit Ledger Ref</th>
+                                    <th>Credit Amount</th>
+                                    <th>Explanation</th>
+                                    <th>Source File</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {approvedJournalEntries.map(entry => (
+                                    <tr key={entry.journalId}>
+                                        <td>{entry.journalId}</td>
+                                        <td>{entry.date}</td>
+                                        <td>{entry.debitAccountTitle.join(", ")}</td>
+                                        <td>{entry.debitLedgerRef.join(", ")}</td>
+                                        <td>{entry.debitAmount.join(", ")}</td>
+                                        <td>{entry.creditAccountTitle.join(", ")}</td>
+                                        <td>{entry.creditLedgerRef.join(", ")}</td>
+                                        <td>{entry.creditAmount}</td>
+                                        <td>{entry.explanation}</td>
+                                        <td>
+                                            <a href={entry.sourceFile} target="_blank" rel="noopener noreferrer">View File</a>
+                                        </td>
+                                        <td>
+                                            {user.role === "Manager" && (
+                                                <>
+                                                    <button onClick={() => openEditModal(entry)}>Edit</button>
+                                                </>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                     {/* Pending Journal Entries Table */}
                     <div className="user-box">
@@ -340,51 +401,6 @@ const JournalPage = () => {
                                                     <button onClick={() => openEditModal(entry)}>Edit</button>
                                                     <button onClick={() => approveEntry(entry.id)}>Approve</button>
                                                     <button onClick={() => denyEntry(entry.id)}>Deny</button>
-                                                </>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    {/* Display Approved Journal Entries */}
-                    <div className="user-box">
-                        <h3>Approved Journal Entries</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Journal ID</th>
-                                    <th>Date</th>
-                                    <th>Debit Account Title</th>
-                                    <th>Debit Ledger Ref</th>
-                                    <th>Debit Amount</th>
-                                    <th>Credit Account Title</th>
-                                    <th>Credit Ledger Ref</th>
-                                    <th>Credit Amount</th>
-                                    <th>Explanation</th>
-                                    <th>Source File</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {approvedJournalEntries.map(entry => (
-                                    <tr key={entry.journalId}>
-                                        <td>{entry.journalId}</td>
-                                        <td>{entry.date}</td>
-                                        <td>{entry.debitAccountTitle.join(", ")}</td>
-                                        <td>{entry.debitLedgerRef.join(", ")}</td>
-                                        <td>{entry.debitAmount.join(", ")}</td>
-                                        <td>{entry.creditAccountTitle.join(", ")}</td>
-                                        <td>{entry.creditLedgerRef.join(", ")}</td>
-                                        <td>{entry.creditAmount}</td>
-                                        <td>{entry.explanation}</td>
-                                        <td>
-                                            <a href={entry.sourceFile} target="_blank" rel="noopener noreferrer">View File</a>
-                                        </td>
-                                        <td>
-                                            {user.role === "Manager" && (
-                                                <>
-                                                    <button onClick={() => openEditModal(entry)}>Edit</button>
                                                 </>
                                             )}
                                         </td>
