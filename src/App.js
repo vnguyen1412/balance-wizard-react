@@ -8,7 +8,7 @@ import { HomePage } from './components/HomePage';
 import AdminInterface from './components/adminInterface';
 import ChartOfAccountsPage from './components/ChartOfAccountsPage';
 import JournalPage from './components/JournalPage';
-import LedgerPage from './components/LedgerPage';
+import LedgerPage from './components/ledgerPage';
 import { UserProvider } from "./components/userContext";
 import { ForgetPassword } from './components/forgetPassword';
 import Email from './components/SendEmail/SendEmailPage';
