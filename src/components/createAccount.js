@@ -158,6 +158,8 @@ export const CreateAccount = () => {
                                 <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
                                 <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
                                 <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                                <Link to="/ledger"><button className='menuBarButtons'>Ledgers</button></Link>
+                                <Link to="/statements"><button className='menuBarButtons'>Statements</button></Link>
                             </>
                         )}
                         {(user.role === 'Manager' || user.role === 'Administrator') && (
@@ -166,6 +168,8 @@ export const CreateAccount = () => {
                                 <Link to="/send-email"><button className='menuBarButtons'>Send Email</button></Link>
                                 <Link to="/chart"><button className='menuBarButtons'>Charts</button></Link>
                                 <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
+                                <Link to="/ledger-page"><button className='menuBarButtons'>Ledgers</button></Link>
+                                <Link to="/statements"><button className='menuBarButtons'>Statements</button></Link>
                             </>
                         )}
                     </>
