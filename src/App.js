@@ -8,6 +8,7 @@ import { HomePage } from './components/HomePage';
 import AdminInterface from './components/adminInterface';
 import ChartOfAccountsPage from './components/ChartOfAccountsPage';
 import JournalPage from './components/JournalPage';
+import LedgerPage from './components/LedgerPage';
 import { UserProvider } from "./components/userContext";
 import { ForgetPassword } from './components/forgetPassword';
 import Email from './components/SendEmail/SendEmailPage';
@@ -27,8 +28,8 @@ function App () {
                 <Route path="/forget-password" element={<ForgetPassword />} />
                 <Route path="/send-email" element={<Email />} />
                 <Route path="/journal" element={<JournalPage />} />
+                <Route path="/ledger" element={<LedgerPage />} />
                 <Route path="/statements" element={<StatementPage />} />
-                <Route path="/ledger" element={<ledgerPage />} />
                 {/* Add more routes for other pages as needed */}
             </Routes>
         </Router>
