@@ -19,6 +19,13 @@ const ChartOfAccounts = () => {
     const [accounts, setAccounts] = useState([]);
     const currentDate = new Date();
 
+    const [searchBar, setSearchBar] = useState('');
+    const handleSearchSubmit = (event) => {
+        event.preventDefault(); 
+        const searchTerm = event.target.searchBarTxt.value;
+        setSearchBar(searchTerm);
+    };
+
     // Get date components
     const year = currentDate.getFullYear();
     const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so we add 1
@@ -49,14 +56,19 @@ const ChartOfAccounts = () => {
                 const accountsCollection = collection(db, 'accounts');
                 const accountsSnapshot = await getDocs(accountsCollection);
                 const accountsData = accountsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setAccounts(accountsData);
+                if (searchBar != ""){
+                    const filteredData = accountsData.filter(account => account.accountName === searchBar);
+                    setAccounts(filteredData);
+                } else {
+                    setAccounts(accountsData);
+                }
             } catch (error) {
                 setError(error.message);
             }
         };
 
         fetchAccounts();
-    }, []); // Empty dependency array ensures the effect runs only once, on component mount
+    }, [searchBar]); // Empty dependency array ensures the effect runs only once, on component mount
 
     const handleSubmitEdit = async (event) => {
         event.preventDefault(); // Prevent default form submission behavior
@@ -240,11 +252,12 @@ const ChartOfAccounts = () => {
         <div>
             <button onClick={() => setAddAccountPopup(true)}>Add Account</button> 
             <button onClick={() => setEditAccountPopup(true)}>Edit Account</button>
-                <div className='overlay'>
-                    <h1 className="smallText">Search Account</h1>
-                    <textarea className='searchBar' placeholder='Search..' rows={1} cols={15} />
-                    <button className='searchPB'>Search</button>
+            <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', margin: '10px'}}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <input name="searchBarTxt" type="text" placeholder='Search Accounts..' style={{ display: 'block', marginBottom: '5px', width: '170px', textAlign: 'center'}} />
+                    <button type="submit" style={{ display: 'block' }}>Search</button>
                 </div>
+            </form>
             <table className="accounts-table">
                 <thead>
                     <tr>
