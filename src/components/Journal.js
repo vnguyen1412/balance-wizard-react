@@ -146,9 +146,21 @@ const Journal = () => {
             console.log("here is the final explanation: " + explanation)
             console.log("here is the url for the file: " + downloadURL);
 
-            const collectionRef = collection(db, "journalEntries");
-            const docRef = await addDoc(collectionRef, {
-                journalId: "J1",
+            //create the journal id and increment the counter in the database by one
+            const idRef = doc(db, "journalEntries", "IdCounter");
+            const idSnapshot = await getDoc(idRef);
+            const newJournalId = "J" + idSnapshot.data().currentId;
+            
+            const nextId = idSnapshot.data().currentId + 1;
+            await setDoc(idRef, {
+                currentId: nextId
+            })
+
+            //const collectionRef = collection(db, "journalEntries");
+            const collectionRef = doc(db, "journalEntries", newJournalId);
+            //const docRef = await addDoc(collectionRef, {
+            await setDoc(collectionRef, {
+                journalId: newJournalId,
                 date: currentDateTimeString,
                 debitAccountTitle: debitAccountTitle,
                 debitLedgerRef: debitLedgerRef,
