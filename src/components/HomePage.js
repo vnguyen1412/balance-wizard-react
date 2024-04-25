@@ -11,6 +11,24 @@ export const HomePage = () => {
     const { user, handleSignOut } = useUser();
     const { pendingUsers } = usePendingUsers();
     const { pendingJournals} = usePendingJournals();
+    const { ratios } = useFinancialRatios();
+
+    const getCurrentRatioColor = (value) => {
+        if (value < 1.0) return 'red';
+        if (value >= 1.0 && value < 1.5) return 'yellow';
+        return 'green';
+    };
+    const getTurnoverRatioColor = (value) => {
+        if (value < 0.5) return 'red';
+        if (value >= 0.5 && value < 1.0) return 'yellow';
+        return 'green';
+    };
+    const getDebtRatioColor = (value) => {
+        if (value > 0.6) return 'red';
+        if (value <= 0.6 && value > 0.4) return 'yellow';
+        return 'green';
+    };
+
 
     return (
         <div>
@@ -85,9 +103,9 @@ export const HomePage = () => {
                     </div>
                     <div>
                         <h2 className="notifications-title">Financial Ratios</h2>
-                        <p>Current Ratio: {ratios[0]}</p>
-                        <p>Asset Turnover Ratio: {ratios[1]}</p>
-                        <p>Debit to Asset Ratio: {ratios[2]}</p>
+                        <p style = {{color: getCurrentRatioColor(ratios[0])}}>Current Ratio: {ratios[0]}</p>
+                        <p style = {{color: getTurnoverRatioColor(ratios[1])}}>Asset Turnover Ratio: {ratios[1]}</p>
+                        <p style = {{color: getDebtRatioColor(ratios[2])}}>Debt to Asset Ratio: {ratios[2]}</p>
                     </div>
                 </div>
             </div>
