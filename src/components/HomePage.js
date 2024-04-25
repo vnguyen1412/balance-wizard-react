@@ -5,6 +5,7 @@ import "./Styling.css"; // Importing the CSS file
 import { useUser } from './userContext';
 import { usePendingUsers } from './usePendingUsers';
 import { usePendingJournals } from './usePendingJournals';
+import { useFinancialRatios } from './useFinancialRatios';
 
 export const HomePage = () => {
     const { user, handleSignOut } = useUser();
@@ -81,6 +82,12 @@ export const HomePage = () => {
                         {(user.role === 'Manager' || user.role === 'Administrator') && pendingJournals.length > 0 && (
                             <p>You have pending journals to approve.</p>
                         )}
+                    </div>
+                    <div>
+                        <h2 className="notifications-title">Financial Ratios</h2>
+                        <p>Current Ratio: {ratios[0]}</p>
+                        <p>Asset Turnover Ratio: {ratios[1]}</p>
+                        <p>Debit to Asset Ratio: {ratios[2]}</p>
                     </div>
                 </div>
             </div>
