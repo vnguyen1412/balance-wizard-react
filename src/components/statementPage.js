@@ -68,6 +68,7 @@ const StatementPage = () => {
                                 <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
                                 <Link to="/ledger-page"><button className='menuBarButtons'>Ledgers</button></Link>
                                 <Link to="/statements"><button className='menuBarButtons'>Statements</button></Link>
+                                <Link to="/help"><button className='menuBarButtons'>Help</button></Link>
                             </>
                         )}
                         {(user.role === 'Manager' || user.role === 'Administrator') && (
@@ -78,6 +79,7 @@ const StatementPage = () => {
                                 <Link to="/journal"><button className='menuBarButtons'>Journals</button></Link>
                                 <Link to="/ledger-page"><button className='menuBarButtons'>Ledgers</button></Link>
                                 <Link to="/statements"><button className='menuBarButtons'>Statements</button></Link>
+                                <Link to="/help"><button className='menuBarButtons'>Help</button></Link>
                             </>
                         )}
                     </>
