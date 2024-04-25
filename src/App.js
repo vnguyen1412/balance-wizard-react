@@ -13,6 +13,8 @@ import { UserProvider } from "./components/userContext";
 import { ForgetPassword } from './components/forgetPassword';
 import Email from './components/SendEmail/SendEmailPage';
 import StatementPage from "./components/statementPage";
+import HelpPage from "./components/HelpPage";
+
 
 function App () {
   return (
@@ -29,6 +31,7 @@ function App () {
                 <Route path="/journal" element={<JournalPage />} />
                 <Route path="/ledger-page" element={<LedgerPage />} />
                 <Route path="/statements" element={<StatementPage />} />
+                <Route path="/help" element={<HelpPage />} />
                 {/* Add more routes for other pages as needed */}
             </Routes>
         </Router>

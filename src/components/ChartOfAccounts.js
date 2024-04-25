@@ -283,7 +283,7 @@ const ChartOfAccounts = () => {
                                     name="selectedAccount"
                                     onChange={() => setSelectedAccount(account)}
                                     checked={selectedAccount === account}
-                                />                           
+                                />                      
                             </td>
                             <td>{account.accountNumber}</td>
                             <td>{account.accountName}</td>
@@ -296,7 +296,7 @@ const ChartOfAccounts = () => {
                             <td>{account.date}</td>
                         </tr>
                     ))}
-                </tbody>
+                </tbody>  
             </table>
             {addAccountPopup && (
                 <div className="popup">
