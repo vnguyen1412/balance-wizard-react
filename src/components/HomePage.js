@@ -3,9 +3,13 @@ import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
 import { Link } from 'react-router-dom';
 import "./Styling.css"; // Importing the CSS file
 import { useUser } from './userContext';
+import { usePendingUsers } from './usePendingUsers';
+import { usePendingJournals } from './usePendingJournals';
 
 export const HomePage = () => {
     const { user, handleSignOut } = useUser();
+    const { pendingUsers } = usePendingUsers();
+    const { pendingJournals} = usePendingJournals();
 
     return (
         <div>
@@ -69,6 +73,15 @@ export const HomePage = () => {
             <div className="blue-box">
                 <div className="user-box">
                     <h2 className="user-box-title">Welcome to Balance Wizard</h2>
+                    <div className="notifications-container">
+                        <h2 className="notifications-title">Notifications</h2>
+                        {user.role === 'Administrator' && pendingUsers.length > 0 && (
+                            <p>You have pending users to review.</p>
+                        )}
+                        {(user.role === 'Manager' || user.role === 'Administrator') && pendingJournals.length > 0 && (
+                            <p>You have pending journals to approve.</p>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
