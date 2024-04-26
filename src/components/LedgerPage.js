@@ -143,7 +143,7 @@ const LedgerPage = () => {
                         <h2 className="user-box-title">General Ledger</h2>
                         <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', margin: '10px'}}>
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                <input name="searchBarTxt" type="text" placeholder='Search Journals..' style={{ display: 'block', marginBottom: '5px', width: '170px', textAlign: 'center'}} />
+                                <input name="searchBarTxt" type="text" placeholder='Search Ledger..' style={{ display: 'block', marginBottom: '5px', width: '170px', textAlign: 'center'}} />
                                 <button type="submit" style={{ display: 'block' }}>Search</button>
                             </div>
                         </form>
