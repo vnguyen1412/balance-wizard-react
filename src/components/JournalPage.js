@@ -333,7 +333,7 @@ const JournalPage = () => {
                                         <td>{entry.debitAmount.join(", ")}</td>
                                         <td>{entry.creditAccountTitle.join(", ")}</td>
                                         <td>{entry.creditLedgerRef.join(", ")}</td>
-                                        <td>{entry.creditAmount}</td>
+                                        <td>{entry.creditAmount.join(", ")}</td>
                                         <td>{entry.explanation}</td>
                                         <td>
                                             <a href={entry.sourceFile} target="_blank" rel="noopener noreferrer">View File</a>
