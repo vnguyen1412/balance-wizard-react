@@ -119,13 +119,6 @@ const JournalPage = () => {
             let currentListOfJournalRefs = accountData.listOfJournalRefs;
             currentListOfJournalRefs.push(docData.journalId);
 
-            console.log("Here is the new listOfAmountType for " + accountData.accountName + ": " + currentListOfAmountType);
-            console.log("Here is the new listOfAmounts for " + accountData.accountName + ": " + currentListOfAmounts);
-            console.log("Here is the new listOfBalances for " + accountData.accountName + ": " + currentListOfBalances);
-            console.log("Here is the new listOfDates for " + accountData.accountName + ": " + currentListOfDates);
-            console.log("Here is the new listOfJournalRefs for " + accountData.accountName + ": " + currentListOfJournalRefs);
-            console.log("Here is the new balance for " + accountData.accountName + ": " + newBalance);
-
             await updateDoc(accountRef, {
                 listOfAmountType: currentListOfAmountType,
                 listOfAmounts: currentListOfAmounts,
@@ -171,13 +164,6 @@ const JournalPage = () => {
             //update the listOfJournalRefs
             let currentListOfJournalRefs = accountData.listOfJournalRefs;
             currentListOfJournalRefs.push(docData.journalId);
-
-            console.log("Here is the new listOfAmountType for " + accountData.accountName + ": " + currentListOfAmountType);
-            console.log("Here is the new listOfAmounts for " + accountData.accountName + ": " + currentListOfAmounts);
-            console.log("Here is the new listOfBalances for " + accountData.accountName + ": " + currentListOfBalances);
-            console.log("Here is the new listOfDates for " + accountData.accountName + ": " + currentListOfDates);
-            console.log("Here is the new listOfJournalRefs for " + accountData.accountName + ": " + currentListOfJournalRefs);
-            console.log("Here is the new balance for " + accountData.accountName + ": " + newBalance);
 
             await updateDoc(accountRef, {
                 listOfAmountType: currentListOfAmountType,
