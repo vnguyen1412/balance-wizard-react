@@ -58,9 +58,6 @@ const Journal = () => {
                 setAccountTitleList(accountsName);
                 const accountsNumber = accountsSnapshot.docs.map(doc => doc.data().accountNumber)
                 setLedgerRefList(accountsNumber);
-
-                console.log("here's the list of account names: " + accountTitleList);
-                console.log("here's the list of account numbers: " + ledgerRefList);
             } catch (error) {
                 setError(error.message);
             }
@@ -137,13 +134,6 @@ const Journal = () => {
             //calls the method that deals with uploading the document to Firebase Storage
             uploadSourceFile();
 
-            console.log("here is the final debit account title array: " + debitAccountTitle)
-            console.log("here is the final debit refs: " + debitLedgerRef)
-            console.log("here is the final debit amount array: " + debitAmount)
-            console.log("here is the final credit account title array: " + creditAccountTitle)
-            console.log("here is the final credit refs: " + creditLedgerRef)
-            console.log("here is the final credit amount array: " + creditAmount)
-            console.log("here is the final explanation: " + explanation)
             console.log("here is the url for the file: " + downloadURL);
 
             //create the journal id and increment the counter in the database by one
