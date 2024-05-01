@@ -11,6 +11,7 @@ import { useUser } from './userContext';
 const AdminInterface = () => {
     const [currentUsers, setCurrentUsers] = useState([]);
     const [pendingUsers, setPendingUsers] = useState([]);
+    const [suspendedUsers, setSuspendedUsers] = useState([]);
     const [editingUser, setEditingUser] = useState(null);
     const [resetSent, setResetSent] = useState(false);
     const { user, handleSignOut } = useUser();
@@ -46,8 +47,10 @@ const AdminInterface = () => {
             const usersData = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             const current = usersData.filter(user => user.status === 'Approved').sort((a, b) => a.firstName.localeCompare(b.firstName));
             const pending = usersData.filter(user => user.status === 'Pending').sort((a, b) => a.firstName.localeCompare(b.firstName));
+            const suspended = usersData.filter(user => user.status === 'Suspended').sort((a, b) => a.firstName.localeCompare(b.firstName));
             setCurrentUsers(current);
             setPendingUsers(pending);
+            setSuspendedUsers(suspended);
         } catch (error) {
             console.error('Error fetching users:', error);
         }
@@ -57,7 +60,7 @@ const AdminInterface = () => {
         try {
             const db = getFirestore();
             const userRef = doc(db, 'users', userId);
-            await updateDoc(userRef, { status: 'Approved' });
+            await updateDoc(userRef, { status: 'Approved', loginAttempts: 0 });
             const userDocSnap = await getDoc(userRef);
             if (userDocSnap.exists()) {
                 const userData = userDocSnap.data();
@@ -315,6 +318,34 @@ const AdminInterface = () => {
                                     <td>
                                         <button onClick={() => approveUser(users.id)}>Approve</button>
                                         <button onClick={() => rejectUser(users.id)}>Reject</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="user-box">
+                    <h3>Suspended Users</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {suspendedUsers.map(users => (
+                                <tr key={users.id}>
+                                    <td>{`${users.firstName} ${users.lastName}`}</td>
+                                    <td>{users.email}</td>
+                                    <td>{users.role}</td>
+                                    <td>{users.status}</td>
+                                    <td>
+                                        {/* Add a button to reapprove the suspended user */}
+                                        <button onClick={() => approveUser(users.id)}>Reapprove</button>
                                     </td>
                                 </tr>
                             ))}

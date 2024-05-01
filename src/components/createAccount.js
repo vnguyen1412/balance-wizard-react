@@ -57,7 +57,8 @@ export const CreateAccount = () => {
                 status: "Pending",
                 username: username,
                 suspensionStartDate: "",
-                suspensionExpiryDate: ""
+                suspensionExpiryDate: "",
+                loginAttempts: 0
             });
             // Send user data to Cloud Function for approval
             await fetch('/requestAccountCreation', {
