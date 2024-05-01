@@ -1,8 +1,7 @@
 import { auth } from "../config/firebase";
-import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "firebase/auth";
-import { useState, useEffect } from "react";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { useState } from "react";
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
-import DefaultProfilePic from "./DefaultProfilePic.png";
 import { Link } from 'react-router-dom';
 import { getFirestore, doc, getDoc, collection, query, where } from 'firebase/firestore'; // Import Firestore functions
 import "./Styling.css"; // Importing the CSS file
@@ -30,55 +29,28 @@ export const Auth = () => {
             const userSnap = await getDoc(userDoc);
             if (userSnap.exists()) {
                 const userData = userSnap.data();
-                const { suspensionStartDate, suspensionExpiryDate } = userData;
-                const currentDate = new Date();
-                setUser({ username: userData.username })
+                const status = userData.status;
     
-                // Check if the current date is within the suspension period
-                if (currentDate >= suspensionStartDate.toDate() && currentDate <= suspensionExpiryDate.toDate()) {
-                    setError("Access denied. Your account is suspended until further notice.");
-                    return;
+                if (status === 'Approved') {
+                    // Proceed with signing in the user
+                    await signInWithEmailAndPassword(auth, email, password);
+                    alert(`You are now signed in as ${email}`);
+                    // If login is successful, you can redirect the user to another page or perform any other necessary actions
+                } else if (status === 'Pending') {
+                    setError("Your account is pending approval. Please wait for an administrator to approve your account.");
+                } else if (status === 'Suspended') {
+                    const suspensionExpiryDate = userData.suspensionExpiryDate;
+                    setError(`Your account is suspended until ${suspensionExpiryDate}. Please contact an administrator for further assistance.`);
                 }
-            }
-    
-            // Proceed with signing in the user if not suspended
-            await signInWithEmailAndPassword(auth, email, password);
-            alert(`You are now signed in as ${email}`);
-            // If login is successful, you can redirect the user to another page or perform any other necessary actions
+            } else {
+                setError("User data not found!");
+            } 
         } catch (error) {
             setError("Invalid email or password. Please try again."); // Set error message for incorrect password
             console.error(error);
             // Handle login errors here, such as displaying error messages to the user
         }
     }
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            if (currentUser) {
-                // User is signed in, now fetch the username
-                const userDoc = doc(getFirestore(), 'users', currentUser.uid);
-                const userSnap = await getDoc(userDoc);
-                if (userSnap.exists()) {
-                    setUser({
-                        firstName: userSnap.data().firstName,
-                        lastName: userSnap.data().lastName,
-                        username: userSnap.data().username,
-                        profilePic: DefaultProfilePic,
-                        role: userSnap.data().role
-                    });
-                    console.log("Username set to: ", userSnap.data().username);
-                } else {
-                    console.log("No user data found!");
-                }
-            } else {
-                // User is signed out
-                setUser({ username: '', profilePic: '', role: ''});
-            }
-        });
-    
-        // Cleanup subscription on unmount
-        return () => unsubscribe();
-    }, [setUser]); // Dependency array includes setUser to ensure it's stable
 
     const handleForgotPassword = async () => {
         try {
