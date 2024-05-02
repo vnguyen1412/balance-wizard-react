@@ -175,7 +175,7 @@ const LedgerPage = () => {
                                             <tr key={dataIndex}>
                                                 <td>{dataValue}</td>
                                                 <td>{account.listOfExplainations[dataIndex]}</td>
-                                                <td>{account.listOfJournalRefs[dataIndex]}</td>
+                                                <td><Link to={`/journal/${account.listOfJournalRefs[dataIndex]}`}>{account.listOfJournalRefs[dataIndex]}</Link></td>
                                                 {/* this is a conditional rendering to make sure that the amounts are recorded in the correct columns for debit and credit */}
                                                 {account.listOfAmountType[dataIndex] === "debit" ? (
                                                     <>
