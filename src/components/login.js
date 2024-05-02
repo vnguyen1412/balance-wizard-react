@@ -1,10 +1,9 @@
 import { auth } from "../config/firebase";
-import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "firebase/auth";
-import { useState, useEffect } from "react";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { useState } from "react";
 import BalanceWizardLogo from "./BalanceWizardLogo.jpg";
-import DefaultProfilePic from "./DefaultProfilePic.png";
 import { Link } from 'react-router-dom';
-import { getFirestore, doc, getDoc, collection, query, where } from 'firebase/firestore'; // Import Firestore functions
+import { getFirestore, doc, getDocs, getDoc, collection, query, where, updateDoc } from 'firebase/firestore'; // Import Firestore functions
 import "./Styling.css"; // Importing the CSS file
 import { useUser } from './userContext';
 
@@ -24,61 +23,49 @@ export const Auth = () => {
     const signIn = async (e) => {
         e.preventDefault(); // Prevent page refresh on form submission
         try {
-            //to get username of the current sign-in user
-            const db = getFirestore();// Fetch user data from Firestore
-            const userDoc = doc(db, 'users', email); // Assuming email is the user's document ID
-            const userSnap = await getDoc(userDoc);
-            if (userSnap.exists()) {
-                const userData = userSnap.data();
-                const { suspensionStartDate, suspensionExpiryDate } = userData;
-                const currentDate = new Date();
-                setUser({ username: userData.username })
+            const db = getFirestore(); // Fetch user data from Firestore
+            const q = query(collection(db, "users"), where('email', '==', email));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                const userData = querySnapshot.docs[0].data();
+                const status = userData.status;
+                let loginAttempts = userData.loginAttempts || 0; // Initialize loginAttempts if not present
     
-                // Check if the current date is within the suspension period
-                if (currentDate >= suspensionStartDate.toDate() && currentDate <= suspensionExpiryDate.toDate()) {
-                    setError("Access denied. Your account is suspended until further notice.");
-                    return;
+                if (status === 'Approved') {
+                    if (loginAttempts >= 2) { // Check if the user has reached the limit
+                        // Set user status to Suspended if login attempts exceed 2 (3 attempts in total)
+                        await updateDoc(doc(db, "users", querySnapshot.docs[0].id), { status: 'Suspended' });
+                        setError("Your account is suspended due to multiple failed login attempts. Please contact an administrator for further assistance.");
+                    } else {
+                        try {
+                            // Attempt to sign in the user
+                            await signInWithEmailAndPassword(auth, email, password);
+                            alert(`You are now signed in as ${email}`);
+                            // If login is successful, reset loginAttempts
+                            loginAttempts = 0;
+                        } catch (error) {
+                            setError("Invalid email or password. Please try again." ); // Set error message for incorrect password
+                            console.error(error);
+                            // Increment loginAttempts upon failed login attempt
+                            loginAttempts++;
+                            console.log(loginAttempts)
+                        }
+                    }
+                } else if (status === 'Pending') {
+                    setError("Your account is pending approval. Please wait for an administrator to approve your account.");
+                } else if (status === 'Suspended') {
+                    setError(`Your account is suspended. Please contact an administrator for further assistance.`);
                 }
+                // Update loginAttempts in the user document
+                await updateDoc(doc(db, "users", querySnapshot.docs[0].id), { loginAttempts });
+            } else {
+                setError("User data not found!");
             }
-    
-            // Proceed with signing in the user if not suspended
-            await signInWithEmailAndPassword(auth, email, password);
-            alert(`You are now signed in as ${email}`);
-            // If login is successful, you can redirect the user to another page or perform any other necessary actions
         } catch (error) {
-            setError("Invalid email or password. Please try again."); // Set error message for incorrect password
+            setError("Error signing in. Please try again later.");
             console.error(error);
-            // Handle login errors here, such as displaying error messages to the user
         }
     }
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            if (currentUser) {
-                // User is signed in, now fetch the username
-                const userDoc = doc(getFirestore(), 'users', currentUser.uid);
-                const userSnap = await getDoc(userDoc);
-                if (userSnap.exists()) {
-                    setUser({
-                        firstName: userSnap.data().firstName,
-                        lastName: userSnap.data().lastName,
-                        username: userSnap.data().username,
-                        profilePic: DefaultProfilePic,
-                        role: userSnap.data().role
-                    });
-                    console.log("Username set to: ", userSnap.data().username);
-                } else {
-                    console.log("No user data found!");
-                }
-            } else {
-                // User is signed out
-                setUser({ username: '', profilePic: '', role: ''});
-            }
-        });
-    
-        // Cleanup subscription on unmount
-        return () => unsubscribe();
-    }, [setUser]); // Dependency array includes setUser to ensure it's stable
 
     const handleForgotPassword = async () => {
         try {

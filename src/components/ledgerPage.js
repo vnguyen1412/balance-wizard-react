@@ -13,13 +13,20 @@ const LedgerPage = () => {
 
     const [accountData, setAccountData] = useState([]);
 
+    const [searchBar, setSearchBar] = useState('');
+    const handleSearchSubmit = (event) => {
+        event.preventDefault(); 
+        const searchTerm = event.target.searchBarTxt.value;
+        setSearchBar(searchTerm);
+    };
+
     useEffect(() => {
         console.log("First check to see if useEffect is triggered");
 
         fetchAccountData();
 
         console.log("useEffect is running");
-    }, []);
+    }, [searchBar]);
 
     // Function to fetch the account information
     const fetchAccountData = async () => {
@@ -27,7 +34,26 @@ const LedgerPage = () => {
             const db = getFirestore();
             const accountRef = collection(db, 'accounts');
             const accountSnapshot = await getDocs(accountRef);
+            const accountData2 = accountSnapshot.docs.map(doc => ({
+                id: doc.id,
+                accountName: doc.data().accountName,
+                accountNumber: doc.data().accountNumber,
+                listOfDates: doc.data().listOfDates,
+                listOfExplainations: doc.data().listOfExplainations,
+                listOfJournalRefs: doc.data().listOfJournalRefs,
+                listOfAmountType: doc.data().listOfAmountType,
+                listOfAmounts: doc.data().listOfAmounts,
+                listOfBalances: doc.data().listOfBalances
+            }));
 
+            if (searchBar != ""){
+                const filteredData = accountData2.filter(ledger => ledger.accountName === searchBar);
+                setAccountData(filteredData);
+            } else {
+                setAccountData(accountData2);
+            }
+
+            /*
             //get only these certain fields from all of the accounts in the database and save it as an array in the accountData variable
             setAccountData(accountSnapshot.docs.map(doc => ({
                 id: doc.id,
@@ -40,6 +66,7 @@ const LedgerPage = () => {
                 listOfAmounts: doc.data().listOfAmounts,
                 listOfBalances: doc.data().listOfBalances
             })));
+            */
 
             console.log("the list of accounts are: " + accountData);
             console.log("the list of amount type for the cash account is " + accountData[0].listOfAmountType);
@@ -112,6 +139,12 @@ const LedgerPage = () => {
                     <div className="title-container">
                         <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="calendar-input" />
                         <h2 className="user-box-title">General Ledger</h2>
+                        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', margin: '10px'}}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <input name="searchBarTxt" type="text" placeholder='Search Ledger..' style={{ display: 'block', marginBottom: '5px', width: '170px', textAlign: 'center'}} />
+                                <button type="submit" style={{ display: 'block' }}>Search</button>
+                            </div>
+                        </form>
                     </div>
                     {/* will loop through all of the accounts and display a ledger for each account */}
                     {accountData.map((account, index) => (
