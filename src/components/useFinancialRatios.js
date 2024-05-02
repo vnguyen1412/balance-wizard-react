@@ -12,12 +12,6 @@ export const useFinancialRatios = () => {
                 const db = getFirestore();
                 const accountRef = collection(db, 'accounts');
 
-                //this is just for reference and will be deleted later
-                /*
-                const accountCheckRef = collection(db, "accounts");
-                const q = query(accountCheckRef, where("accountNumber", "==", finalAccountNumber));
-                const querySnapshot = await getDocs(q);*/
-
                 //calculate "Current Ratio"
                 //calculating current assets
                 let currentAssets = 0;
@@ -37,15 +31,23 @@ export const useFinancialRatios = () => {
                     currentLiabilities += doc.data().balance;
                 });
 
-                currentRatios.push(currentAssets / currentLiabilities);
+                currentRatios.push(parseFloat(parseFloat(currentAssets / currentLiabilities).toFixed(2)));
                 //setRatios([...ratios, currentAssets / currentLiabilities]);
                 console.log("the current ratio is: " + currentAssets / currentLiabilities);
 
 
                 //calculate "Asset Turnover Ratio"
-                currentRatios.push(0);
+                //calculate the Net Sales by adding Sales Revenue and Service Revenue
+                let netSales = 0;
+                const netSalesQuery = query (accountRef, where("accountName", "in", ["Sales Revenue", "Service Revenue"]));
+                const netSalesSnapshot = await getDocs(netSalesQuery);
 
-                //calculate "Debit to Asset Ratio"
+                netSalesSnapshot.forEach((doc) => {
+                    netSales += doc.data().balance;
+                });
+                console.log("The current net sales are: " + netSales);
+
+                //calulating current assets
                 let totalAssets = 0;
                 const totalAssetQuery = query (accountRef, where("accountCategory", "==", "Asset"));
                 const totalAssetSnapshot = await getDocs(totalAssetQuery);
@@ -53,7 +55,12 @@ export const useFinancialRatios = () => {
                 totalAssetSnapshot.forEach((doc) => {
                     totalAssets += doc.data().balance;
                 });
+                currentRatios.push(parseFloat(parseFloat(netSales / totalAssets).toFixed(2)));
 
+                console.log("The asset turnover is: " + netSales / totalAssets)
+
+                //calculate "Debit to Asset Ratio"
+                //already calculated total assets from above
                 //calculating current liabilities
                 let totalLiabilities = 0;
                 const totalLiabilityQuery = query (accountRef, where("accountCategory", "==", "Liability"));
@@ -63,13 +70,12 @@ export const useFinancialRatios = () => {
                     totalLiabilities += doc.data().balance;
                 });
 
-                currentRatios.push(currentAssets / currentLiabilities);
-                //setRatios([...ratios, totalLiabilities / totalAssets]);
+                currentRatios.push(parseFloat(parseFloat(totalLiabilities / totalAssets).toFixed(2)));
                 console.log("the debt to asset ratio is: " + totalLiabilities / totalAssets);
 
+                setRatios(currentRatios);
                 console.log("here are the current ratios is the array: " + ratios);
 
-                setRatios(currentRatios);
             } catch (err) {
                 console.error('Error fetching journals:', err);
             }
