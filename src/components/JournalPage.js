@@ -50,7 +50,7 @@ const JournalPage = () => {
             const rejected = filteredEntries.filter(entry => entry.status === 'rejected');
 
             if (searchBar != ""){
-                const filteredData = current.filter(entry => entry.date === searchBar);
+                const filteredData = current.filter(entry => entry.journalId === searchBar);
                 setApprovedJournalEntries(filteredData);
             } else {
                 setApprovedJournalEntries(current);
