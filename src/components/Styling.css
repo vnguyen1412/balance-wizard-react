@@ -179,10 +179,6 @@
 .accounts-table {
     width: 100%;
     border-collapse: collapse;
-    display: flex;         
-    flex-direction: column; 
-    justify-content: center;
-    align-items: center;
 }
 
 .accounts-table th, .accounts-table td {
@@ -202,6 +198,35 @@
 }
 
 .accounts-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.statements-table {
+    width: 100%;
+    border-collapse: collapse;
+    display: flex;         
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+}
+
+.statements-table th, .statements-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.statements-table th {
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+
+.statements-table th:hover {
+    background-color: #2e2d2d;
+    color: white
+}
+
+.statements-table tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 

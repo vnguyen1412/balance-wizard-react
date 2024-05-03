@@ -105,9 +105,13 @@ export const HomePage = () => {
                     </div>
                     <div>
                         <h2 className="notifications-title">Financial Ratios</h2>
-                        <p style = {{color: getCurrentRatioColor(ratios[0])}}>Current Ratio: {ratios[0]}</p>
-                        <p style = {{color: getTurnoverRatioColor(ratios[1])}}>Asset Turnover Ratio: {ratios[1]}</p>
-                        <p style = {{color: getDebtRatioColor(ratios[2])}}>Debt to Asset Ratio: {ratios[2]}</p>
+                        {(user.role === 'Administrator' || user.role === 'Manager' || user.role === 'Accountant') && (
+                            <div>
+                                <p style = {{color: getCurrentRatioColor(ratios[0])}}>Current Ratio: {ratios[0]}</p>
+                                <p style = {{color: getTurnoverRatioColor(ratios[1])}}>Asset Turnover Ratio: {ratios[1]}</p>
+                                <p style = {{color: getDebtRatioColor(ratios[2])}}>Debt to Asset Ratio: {ratios[2]}</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

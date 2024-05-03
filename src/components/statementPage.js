@@ -271,7 +271,7 @@ const StatementPage = () => {
                         <button onClick={handleRetainedEarnings}>Retained Earnings</button>
                     </div>
                     {activeTable === 'trialBalance' && (
-                        <div className="accounts-table">
+                        <div className="statements-table">
                             <h3>Trial Balance</h3>
                             <table>
                                 <thead>
@@ -301,7 +301,7 @@ const StatementPage = () => {
                         </div>
                     )}
                     {activeTable === 'incomeStatement' && (
-                        <div className="accounts-table">
+                        <div className="statements-table">
                             <h3>Income Statement</h3>
                             <table>
                                 <thead>
@@ -330,7 +330,7 @@ const StatementPage = () => {
                         </div>
                     )}
                     {activeTable === 'balanceSheet' && (
-                        <div className="accounts-table">
+                        <div className="statements-table">
                             <h3>Balance Sheet</h3>
                             <table>
                                 <thead>
@@ -381,7 +381,7 @@ const StatementPage = () => {
                         </div>
                     )}
                     {activeTable === 'retainedEarnings' && (
-                        <div className="accounts-table">
+                        <div className="statements-table">
                             <h3>Shareholder's Equity</h3>
                             <table>
                                 <thead>
